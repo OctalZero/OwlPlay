@@ -57,6 +57,10 @@ bool OwlDemux::Open(const char* url)
 	// 获取视频流，还有一种通过遍历所有流的方法获取
 	video_stream_ = av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
 	AVStream* as = ic->streams[video_stream_];
+	// 存储宽高
+	width_ = as->codecpar->width;
+	height_ = as->codecpar->height;
+
 	cout << "=================================================" << endl;
 	cout << video_stream_ << "视频信息" << endl;
 	cout << "codec_id = " << as->codecpar->codec_id << endl;

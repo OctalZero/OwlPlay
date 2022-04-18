@@ -36,6 +36,9 @@ public:
 
 	// 媒体总时长（毫秒）
 	int total_ms_ = 0;
+	// 材质宽高
+	int width_ = 0;
+	int height_ = 0;
 protected:
 	std::mutex mutex_;
 	// 解封装上下文

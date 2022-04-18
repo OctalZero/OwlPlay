@@ -5,11 +5,11 @@
 
 class OwlPlay : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    OwlPlay(QWidget *parent = Q_NULLPTR);
+	OwlPlay(QWidget* parent = Q_NULLPTR);
 
-private:
-    Ui::OwlPlayClass ui;
+	//private:
+	Ui::OwlPlayClass ui;
 };

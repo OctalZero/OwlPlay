@@ -16,8 +16,8 @@
   <widget class="OwlVideoWidget" name="video">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>50</y>
+     <x>80</x>
+     <y>30</y>
      <width>800</width>
      <height>600</height>
     </rect>

@@ -82,7 +82,7 @@ AVFrame* OwlDecode::Receive()
 		av_frame_free(&frame);
 		return nullptr;
 	}
-	//cout << "[" << frame->linesize[0] << "]" << " " << flush;
+	/*cout << "[" << frame->linesize[0] << "]" << " " << flush;*/
 
 	return frame;
 }
