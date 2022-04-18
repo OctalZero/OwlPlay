@@ -73,6 +73,8 @@ bool OwlDemux::Open(const char* url)
 	// 获取音频流
 	audio_stream_ = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
 	as = ic->streams[audio_stream_];
+	sample_rate_ = as->codecpar->sample_rate;
+	channels_ = as->codecpar->channels;
 	cout << "=================================================" << endl;
 	cout << audio_stream_ << "音频信息" << endl;
 	cout << "codec_id = " << as->codecpar->codec_id << endl;

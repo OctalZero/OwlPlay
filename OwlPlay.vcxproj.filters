@@ -49,6 +49,15 @@
     <ClCompile Include="OwlVideoWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OwlResample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OwlAudioPlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OwlAudioThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OwlDemux.h">
@@ -57,10 +66,22 @@
     <ClInclude Include="OwlDecode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OwlResample.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OwlAudioPlay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OwlAudioThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="OwlVideoWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

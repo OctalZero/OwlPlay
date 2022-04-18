@@ -27,7 +27,7 @@ public:
 	OwlDecode();
 	~OwlDecode();
 protected:
-	AVCodecContext* codec_context_ = 0;
+	AVCodecContext* codec_context_ = nullptr;
 	std::mutex mutex_;
 };
 

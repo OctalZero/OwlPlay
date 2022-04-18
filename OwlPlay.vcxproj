@@ -33,7 +33,7 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>msvc2019_64</QtInstall>
-    <QtModules>core;opengl;gui;widgets;openglextensions</QtModules>
+    <QtModules>core;opengl;gui;multimedia;widgets;openglextensions</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
@@ -99,6 +99,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="OwlAudioPlay.cpp" />
+    <ClCompile Include="OwlAudioThread.cpp" />
+    <ClCompile Include="OwlResample.cpp" />
     <ClCompile Include="OwlVideoWidget.cpp" />
     <QtRcc Include="OwlPlay.qrc" />
     <QtUic Include="OwlPlay.ui" />
@@ -109,9 +112,15 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="OwlAudioPlay.h" />
+    <ClInclude Include="OwlAudioThread.h" />
     <ClInclude Include="OwlDecode.h" />
     <ClInclude Include="OwlDemux.h" />
+    <ClInclude Include="OwlResample.h" />
     <QtMoc Include="OwlVideoWidget.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
