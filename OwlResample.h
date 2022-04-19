@@ -3,6 +3,7 @@
 struct AVCodecParameters;
 struct SwrContext;
 struct AVFrame;
+// 音频重采样的类
 class OwlResample
 {
 public:

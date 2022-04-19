@@ -101,7 +101,9 @@
   <ItemGroup>
     <ClCompile Include="OwlAudioPlay.cpp" />
     <ClCompile Include="OwlAudioThread.cpp" />
+    <ClCompile Include="OwlDemuxThread.cpp" />
     <ClCompile Include="OwlResample.cpp" />
+    <ClCompile Include="OwlVideoThread.cpp" />
     <ClCompile Include="OwlVideoWidget.cpp" />
     <QtRcc Include="OwlPlay.qrc" />
     <QtUic Include="OwlPlay.ui" />
@@ -112,11 +114,14 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IVideoCall.h" />
     <ClInclude Include="OwlAudioPlay.h" />
     <ClInclude Include="OwlAudioThread.h" />
     <ClInclude Include="OwlDecode.h" />
     <ClInclude Include="OwlDemux.h" />
+    <ClInclude Include="OwlDemuxThread.h" />
     <ClInclude Include="OwlResample.h" />
+    <ClInclude Include="OwlVideoThread.h" />
     <QtMoc Include="OwlVideoWidget.h" />
   </ItemGroup>
   <ItemGroup>

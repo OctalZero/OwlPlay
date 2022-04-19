@@ -4,6 +4,7 @@ struct AVFormatContext;
 struct AVPacket;
 struct AVCodecParameters;
 
+// 解封装的类
 class OwlDemux
 {
 public:

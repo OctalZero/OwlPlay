@@ -4,6 +4,7 @@ struct AVCodecParameters;
 struct AVCodecContext;
 struct AVFrame;
 struct AVPacket;
+// ½âÂëµÄÀà
 class OwlDecode
 {
 public:

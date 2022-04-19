@@ -1,19 +1,20 @@
 #pragma once
-
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QGLShaderProgram>
 #include <mutex>
+#include "IVideoCall.h"
 struct AVFrame;
-class OwlVideoWidget : public QOpenGLWidget, protected QOpenGLFunctions
+// 显示视频图像的类
+class OwlVideoWidget : public QOpenGLWidget, protected QOpenGLFunctions, public IVideoCall
 {
 	Q_OBJECT
 
 public:
 	// 初始化
-	void Init(int width, int height);
+	virtual void Init(int width, int height) override;
 	// 重绘图像，不管成功与否都释放frame空间
-	virtual void Repaint(AVFrame* frame);
+	virtual void Repaint(AVFrame* frame) override;
 
 	OwlVideoWidget(QWidget* parent);
 	~OwlVideoWidget();

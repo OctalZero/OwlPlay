@@ -56,7 +56,6 @@ void OwlAudioThread::Push(AVPacket* pkt)
 		mutex_.unlock();
 		msleep(1);
 	}
-
 }
 
 void OwlAudioThread::run()

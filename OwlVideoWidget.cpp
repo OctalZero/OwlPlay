@@ -108,8 +108,8 @@ void OwlVideoWidget::Repaint(AVFrame* frame)
 	memcpy(datas[0], frame->data[0], static_cast<int64_t>(width_) * height_);
 	memcpy(datas[1], frame->data[1], static_cast<int64_t>(width_) * height_ / 4);
 	memcpy(datas[2], frame->data[2], static_cast<int64_t>(width_) * height_ / 4);
-
 	mutex_.unlock();
+	av_frame_free(&frame);  // 拷贝完空间后及时释放
 
 	// 刷新显示
 	update();

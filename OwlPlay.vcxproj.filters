@@ -58,6 +58,12 @@
     <ClCompile Include="OwlAudioThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OwlVideoThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OwlDemuxThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OwlDemux.h">
@@ -73,6 +79,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OwlAudioThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OwlVideoThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IVideoCall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OwlDemuxThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

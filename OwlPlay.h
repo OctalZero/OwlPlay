@@ -3,6 +3,7 @@
 #include <QtWidgets/QWidget>
 #include "ui_OwlPlay.h"
 
+// ²¥·ÅÆ÷Àà
 class OwlPlay : public QWidget
 {
 	Q_OBJECT

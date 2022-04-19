@@ -1,18 +1,18 @@
 #pragma once
-#include <QThread>
-#include <mutex>
 #include <list>
-class OwlDecode;
-class OwlAudioPlay;
-class OwlResample;
-struct AVCodecParameters;
+#include <mutex>
+#include <QThread>
+#include "IVideoCall.h"
 struct AVPacket;
-// 播放音频的控制类
-class OwlAudioThread : public QThread
+struct AVCodecParameters;
+class OwlDecode;
+
+// 解码和显示视频的类
+class OwlVideoThread : public QThread
 {
 public:
 	// 打开，不管成功与否都清理
-	virtual bool Open(AVCodecParameters* para, int sample_rate, int channels);
+	virtual bool Open(AVCodecParameters* para, IVideoCall* video_call, int width, int height);
 
 	// 放入packet到缓冲队列
 	virtual void Push(AVPacket* pkt);
@@ -20,8 +20,8 @@ public:
 	// 从缓冲队列取出packet
 	void run() override;
 
-	OwlAudioThread();
-	virtual ~OwlAudioThread();
+	OwlVideoThread();
+	virtual ~OwlVideoThread();
 public:
 	// 最大队列，缓冲约2s
 	int maxList_ = 100;
@@ -32,7 +32,6 @@ protected:
 	// 生产者消费者模式，由调用者生产packet扔到该生产队列中，再在线程中消费packet。
 	std::list<AVPacket*> packets_;
 	OwlDecode* decode_ = nullptr;  // 解码器
-	OwlAudioPlay* audio_play_ = nullptr;  // 音频播放
-	OwlResample* resample_ = nullptr;  // 重采样 
+	IVideoCall* video_call_ = nullptr;  // 显示视频图像的接口
 };
 
