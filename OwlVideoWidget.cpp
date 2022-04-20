@@ -105,9 +105,24 @@ void OwlVideoWidget::Repaint(AVFrame* frame)
 		mutex_.unlock();
 		return;
 	}
-	memcpy(datas[0], frame->data[0], static_cast<int64_t>(width_) * height_);
-	memcpy(datas[1], frame->data[1], static_cast<int64_t>(width_) * height_ / 4);
-	memcpy(datas[2], frame->data[2], static_cast<int64_t>(width_) * height_ / 4);
+
+	if (width_ == frame->linesize[0]) {  // 无需对齐
+		memcpy(datas[0], frame->data[0], static_cast<int64_t>(width_) * height_);
+		memcpy(datas[1], frame->data[1], static_cast<int64_t>(width_) * height_ / 4);
+		memcpy(datas[2], frame->data[2], static_cast<int64_t>(width_) * height_ / 4);
+	}
+	else {
+		for (int i = 0; i < height_; ++i) {  // Y
+			memcpy(datas[0] + width_ * i, frame->data[0] + frame->linesize[0] * i, width_);
+		}
+		for (int i = 0; i < height_ / 2; ++i) {  // U
+			memcpy(datas[1] + width_ / 2 * i, frame->data[1] + frame->linesize[1] * i, width_);
+		}
+		for (int i = 0; i < height_ / 2; ++i) {  // V
+			memcpy(datas[2] + width_ / 2 * i, frame->data[2] + frame->linesize[2] * i, width_);
+		}
+	}
+
 	mutex_.unlock();
 	av_frame_free(&frame);  // 拷贝完空间后及时释放
 

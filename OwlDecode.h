@@ -18,8 +18,6 @@ public:
 	// 每次复制一份，由调用者释放 av_frame_free
 	virtual AVFrame* Receive();
 
-
-
 	// 关闭
 	virtual void Close();
 	// 清理缓存
@@ -27,6 +25,9 @@ public:
 
 	OwlDecode();
 	~OwlDecode();
+public:
+	// 当前解码到的pts
+	long long pts_ = 0;
 protected:
 	AVCodecContext* codec_context_ = nullptr;
 	std::mutex mutex_;

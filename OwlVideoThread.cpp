@@ -33,7 +33,7 @@ void OwlVideoThread::Push(AVPacket* pkt)
 	// 阻塞，数据不能丢
 	while (!is_exit_) {
 		mutex_.lock();
-		if (packets_.size() < maxList_) {
+		if (packets_.size() < max_list_) {
 			packets_.push_back(pkt);
 			mutex_.unlock();
 			break;
@@ -47,8 +47,16 @@ void OwlVideoThread::run()
 {
 	while (!is_exit_) {
 		mutex_.lock();
-		// 没有数据，或者decode_、resample_、audio_play_没有初始化号
+
+		// 没有数据，或者decode_没有初始化好
 		if (packets_.empty() || !decode_) {
+			mutex_.unlock();
+			msleep(1);
+			continue;
+		}
+
+		// 音视频同步
+		if (syn_pts_ < decode_->pts_) {
 			mutex_.unlock();
 			msleep(1);
 			continue;

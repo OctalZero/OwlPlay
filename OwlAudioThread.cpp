@@ -9,6 +9,7 @@ bool OwlAudioThread::Open(AVCodecParameters* para, int sample_rate, int channels
 {
 	if (!para)  return false;
 	mutex_.lock();
+	pts_ = 0;
 	if (!decode_)  decode_ = new OwlDecode();
 	if (!resample_)  resample_ = new OwlResample();
 	if (!audio_play_) audio_play_ = OwlAudioPlay::GetAudioPlay();
@@ -48,7 +49,7 @@ void OwlAudioThread::Push(AVPacket* pkt)
 	// 阻塞，数据不能丢
 	while (!is_exit_) {
 		mutex_.lock();
-		if (packets_.size() < maxList_) {
+		if (packets_.size() < max_list_) {
 			packets_.push_back(pkt);
 			mutex_.unlock();
 			break;
@@ -60,7 +61,7 @@ void OwlAudioThread::Push(AVPacket* pkt)
 
 void OwlAudioThread::run()
 {
-	// 重采样后音频输出数据，分配10M存放
+	// 重采样后音频输出数据，分配10MB存放
 	unsigned char* pcm = new unsigned char[1024 * 1024 * 10];
 
 	while (!is_exit_) {
@@ -85,6 +86,11 @@ void OwlAudioThread::run()
 		while (!is_exit_) {
 			AVFrame* frame = decode_->Receive();
 			if (!frame)  break;
+
+			// 减去缓冲中未播放的时间 
+			pts_ = decode_->pts_ - audio_play_->GetNoPlayMs();
+
+			cout << "audio pts = " << pts_ << endl;
 			// 重采样
 			int size = resample_->Resample(frame, pcm);
 			// 开始播放音频

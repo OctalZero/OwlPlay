@@ -67,11 +67,11 @@ public:
 				//cout << "Audio:" << frame << endl;
 			}
 			else {
-				video_thread.Push(pkt);
-				//video_decode.Send(pkt);
-				//AVFrame* frame = video_decode.Receive();
-				//video->Repaint(frame);
-				msleep(40);
+				/*video_thread.Push(pkt);*/
+			/*	video_decode.Send(pkt);
+				AVFrame* frame = video_decode.Receive();
+				video->Repaint(frame);*/
+				//msleep(40);
 				//cout << "Video:" << frame << endl;
 			}
 			if (!pkt) {
@@ -108,9 +108,10 @@ int main(int argc, char* argv[])
 	//tt.video = w.ui.video;
 	//tt.Init();
 	//tt.start();
-	OwlDemuxThread demux_thread;
-	demux_thread.Open("v1080.mp4", w.ui.video);
-	demux_thread.Start();
+	//OwlDemuxThread demux_thread;
+	//demux_thread.Open("http://39.134.65.162/PLTV/88888888/224/3221225611/index.m3u8", w.ui.video);
+	//demux_thread.Open("v1080.mp4", w.ui.video);
+	//demux_thread.Start();
 
 	return a.exec();
 }

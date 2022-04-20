@@ -83,7 +83,7 @@ AVFrame* OwlDecode::Receive()
 		return nullptr;
 	}
 	//cout << "[" << frame->linesize[0] << "]" << " " << flush;
-
+	pts_ = frame->pts;
 	return frame;
 }
 
@@ -94,6 +94,7 @@ void OwlDecode::Close()
 		//avcodec_close(codec_context_);  // 该函数只清空的数据，未将指针置空
 		avcodec_free_context(&codec_context_);
 	}
+	pts_ = 0;
 	mutex_.unlock();
 }
 

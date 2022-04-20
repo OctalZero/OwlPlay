@@ -108,7 +108,7 @@ AVPacket* OwlDemux::Read()
 	pkt->pts = pkt->pts * (r2d(ic->streams[pkt->stream_index]->time_base) * 1000);
 	pkt->dts = pkt->dts * (r2d(ic->streams[pkt->stream_index]->time_base) * 1000);
 	mutex_.unlock();
-	cout << pkt->pts << " " << flush;
+	//cout << pkt->pts << " " << flush;
 
 	return pkt;
 }

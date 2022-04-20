@@ -41,6 +41,30 @@ public:
 		mutex_.unlock();
 	}
 
+	// 返回缓冲中还没有播放的时间（毫秒ms）
+	virtual long long GetNoPlayMs() {
+		mutex_.lock();
+		if (!output_) {
+			mutex_.unlock();
+			return 0;
+		}
+
+		long long pts = 0;
+		// 还未播放的字节数
+		double size = output_->bufferSize() - output_->bytesFree();
+		// 一秒音频字节大小
+		double sec_size = sample_rate_ * (sample_size_ / static_cast<double>(8)) * channels_;
+		if (sec_size <= 0) {
+			pts = 0;
+		}
+		else {
+			pts = (size / sec_size) * 1000;  // 计算缓冲中还没有播放的时间
+		}
+		mutex_.unlock();
+
+		return pts;
+	}
+
 	// 播放音频
 	virtual bool Write(const unsigned char* data_, int datasize_) override {
 		if (!data_ || datasize_ <= 0)  return false;
@@ -60,7 +84,7 @@ public:
 	}
 
 	// 判断音频缓冲区是否有足够空间来写
-	virtual int GetFree() {
+	virtual int GetFree() override {
 		mutex_.lock();
 		if (!output_) {
 			mutex_.unlock();

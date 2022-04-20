@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>951</width>
-    <height>801</height>
+    <width>1280</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,11 +16,27 @@
   <widget class="OwlVideoWidget" name="video">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>30</y>
-     <width>800</width>
-     <height>600</height>
+     <x>0</x>
+     <y>0</y>
+     <width>1280</width>
+     <height>720</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>580</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Open</string>
    </property>
   </widget>
  </widget>
@@ -35,5 +51,25 @@
  <resources>
   <include location="OwlPlay.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OwlPlayClass</receiver>
+   <slot>Open()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>597</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>132</x>
+     <y>817</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>Open()</slot>
+ </slots>
 </ui>

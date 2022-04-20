@@ -42,6 +42,9 @@ bool OwlDemuxThread::Open(const char* url, IVideoCall* video_call)
 void OwlDemuxThread::Start()
 {
 	mutex_.lock();
+	if (!demux_)  demux_ = new OwlDemux();
+	if (!video_thread_)  video_thread_ = new OwlVideoThread();
+	if (!audio_thread_)  audio_thread_ = new OwlAudioThread();
 	// 启动当前线程 
 	QThread::start();
 	if (video_thread_)  video_thread_->start();
@@ -58,6 +61,12 @@ void OwlDemuxThread::run()
 			msleep(5);
 			continue;
 		}
+
+		// 音视频同步，没有考虑只有音频或只有视频的情况
+		if (audio_thread_ && video_thread_) {
+			video_thread_->syn_pts_ = audio_thread_->pts_;
+		}
+
 		AVPacket* pkt = demux_->Read();
 		if (!pkt) {
 			mutex_.unlock();
@@ -73,10 +82,10 @@ void OwlDemuxThread::run()
 		else {  // 视频
 			if (video_thread_) {
 				video_thread_->Push(pkt);
-				msleep(1);
 			}
 		}
 		mutex_.unlock();
+		msleep(1);  // 防止读取太快，音视频同步来不及做
 	}
 }
 
