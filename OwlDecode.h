@@ -4,6 +4,7 @@ struct AVCodecParameters;
 struct AVCodecContext;
 struct AVFrame;
 struct AVPacket;
+extern void OwlFreePacket(AVPacket** pkt);  // 暴露释放函数给OwlDecodeThread，避免引入FFmpeg库
 // 解码的类
 class OwlDecode
 {

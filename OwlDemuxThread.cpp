@@ -52,6 +52,20 @@ void OwlDemuxThread::Start()
 	mutex_.unlock();
 }
 
+void OwlDemuxThread::Close()
+{
+	is_exit_ = true;
+	wait();
+	if (video_thread_)  video_thread_->Close();
+	if (audio_thread_)  audio_thread_->Close();
+	mutex_.lock();
+	delete video_thread_;
+	delete audio_thread_;
+	video_thread_ = nullptr;
+	audio_thread_ = nullptr;
+	mutex_.unlock();
+}
+
 void OwlDemuxThread::run()
 {
 	while (!is_exit_) {

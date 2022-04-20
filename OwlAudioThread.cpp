@@ -8,17 +8,15 @@ using namespace std;
 bool OwlAudioThread::Open(AVCodecParameters* para, int sample_rate, int channels)
 {
 	if (!para)  return false;
-	mutex_.lock();
-	pts_ = 0;
-	if (!decode_)  decode_ = new OwlDecode();
-	if (!resample_)  resample_ = new OwlResample();
-	if (!audio_play_) audio_play_ = OwlAudioPlay::GetAudioPlay();
+	Clear();
 
-	bool re = true;  // 不在异常情况下直接返回，防止para没有释放
+	audio_mutex_.lock();
+	pts_ = 0;
+	bool re = true;  // 不在异常情况下直接return，防止para没有释放
 	if (!resample_->Open(para, false)) {
 		cout << "OwlResample open failed!" << endl;
 		re = false;
-		//mutex_.unlock();
+		//audio_mutex_.unlock();
 		//return false;
 	}
 
@@ -28,7 +26,7 @@ bool OwlAudioThread::Open(AVCodecParameters* para, int sample_rate, int channels
 	if (!audio_play_->Open()) {
 		re = false;
 		cout << "OwlAudioPlay open failed!" << endl;
-		//mutex_.unlock();
+		//audio_mutex_.unlock();
 		//return false;
 	}
 	// decode_的Open用完后会释放para，放在最后面释放
@@ -36,28 +34,31 @@ bool OwlAudioThread::Open(AVCodecParameters* para, int sample_rate, int channels
 		cout << "audio OwlDecode open failed!" << endl;
 		re = false;
 	}
-	mutex_.unlock();
+	audio_mutex_.unlock();
 	cout << "OwlAudioThread::Open：" << re << endl;
 
 	return re;
 }
 
-void OwlAudioThread::Push(AVPacket* pkt)
+void OwlAudioThread::Close()
 {
-	if (!pkt)  return;
-
-	// 阻塞，数据不能丢
-	while (!is_exit_) {
-		mutex_.lock();
-		if (packets_.size() < max_list_) {
-			packets_.push_back(pkt);
-			mutex_.unlock();
-			break;
-		}
-		mutex_.unlock();
-		msleep(1);
+	OwlDecodeThread::Close();
+	if (resample_) {
+		resample_->Close();
+		audio_mutex_.lock();
+		delete resample_;
+		resample_ = nullptr;
+		audio_mutex_.unlock();
+	}
+	if (audio_play_) {
+		audio_play_->Close();
+		audio_mutex_.lock();
+		// audio_paly_ 做了单例模式，是一个静态的成员，不需要清理
+		audio_play_ = nullptr;
+		audio_mutex_.unlock();
 	}
 }
+
 
 void OwlAudioThread::run()
 {
@@ -65,20 +66,21 @@ void OwlAudioThread::run()
 	unsigned char* pcm = new unsigned char[1024 * 1024 * 10];
 
 	while (!is_exit_) {
-		mutex_.lock();
-		// 没有数据，或者decode_、resample_、audio_play_没有初始化号
-		if (packets_.empty() || !decode_ || !resample_ || !audio_play_) {
-			mutex_.unlock();
-			msleep(1);
-			continue;
-		}
+		audio_mutex_.lock();
 
-		AVPacket* packet = packets_.front();
-		packets_.pop_front();
+		//// 没有数据，或者decode_、resample_、audio_play_没有初始化号
+		//if (packets_.empty() || !decode_ || !resample_ || !audio_play_) {
+		//	audio_mutex_.unlock();
+		//	msleep(1);
+		//	continue;
+		//}
 
+		//AVPacket* packet = packets_.front();
+		//packets_.pop_front();
+		AVPacket* packet = Pop();
 		bool re = decode_->Send(packet);
 		if (!re) {
-			mutex_.unlock();
+			audio_mutex_.unlock();
 			msleep(1);
 			continue;
 		}
@@ -105,18 +107,18 @@ void OwlAudioThread::run()
 				break;
 			}
 		}
-		mutex_.unlock();
+		audio_mutex_.unlock();
 	}
 	delete[] pcm;
 }
 
 OwlAudioThread::OwlAudioThread()
 {
+	// 确保变量都存在，避免再进行判断
+	if (!resample_)  resample_ = new OwlResample();
+	if (!audio_play_) audio_play_ = OwlAudioPlay::GetAudioPlay();
 }
 
 OwlAudioThread::~OwlAudioThread()
 {
-	// 等待线程退出，不然线程还在运行，但其他空间已经释放了
-	is_exit_ = true;
-	wait();
 }

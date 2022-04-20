@@ -11,8 +11,13 @@ class OwlDemuxThread : public QThread
 public:
 	// 创建对象并打开
 	virtual bool Open(const char* url, IVideoCall* video_call);
+
 	// 启动所有线程
 	virtual void Start();
+
+	// 关闭线程，清理资源
+	virtual void Close();
+
 	// 处理线程
 	void run() override;
 

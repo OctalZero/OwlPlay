@@ -74,6 +74,7 @@ int OwlResample::Resample(AVFrame* in_data, unsigned char* out_data)
 	);
 	if (re <= 0)  return re;
 	int out_size = re * in_data->channels * av_get_bytes_per_sample((AVSampleFormat)out_format_);
+	av_frame_free(&in_data);
 
 	return out_size;
 }

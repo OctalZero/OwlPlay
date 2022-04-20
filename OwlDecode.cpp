@@ -5,6 +5,12 @@ extern "C" {
 #include <libavcodec/avcodec.h>
 }
 
+void OwlFreePacket(AVPacket** pkt)
+{
+	if (!pkt || !(*pkt))  return;  // ÈÝ´í
+	av_packet_free(pkt);
+}
+
 
 bool OwlDecode::Open(AVCodecParameters* para)
 {

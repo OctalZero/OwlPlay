@@ -2,6 +2,7 @@
 #include <QAudioFormat>
 #include <QAudioOutput>
 #include <mutex>
+// µ¥ÀýÄ£Ê½
 class COwlAudioPlay : public OwlAudioPlay
 {
 public:

@@ -11,6 +11,7 @@ public:
 
 	// 返回缓冲中还没有播放的时间（毫秒ms） 
 	virtual long long GetNoPlayMs() = 0;
+
 	// 播放音频
 	virtual bool Write(const unsigned char* data_, int datasize_) = 0;
 

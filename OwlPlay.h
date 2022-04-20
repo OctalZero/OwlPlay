@@ -10,6 +10,7 @@ class OwlPlay : public QWidget
 
 public:
 	OwlPlay(QWidget* parent = Q_NULLPTR);
+	~OwlPlay();
 public slots:
 	// 打开文件或拉流URL
 	void Open();

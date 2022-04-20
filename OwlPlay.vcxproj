@@ -101,6 +101,7 @@
   <ItemGroup>
     <ClCompile Include="OwlAudioPlay.cpp" />
     <ClCompile Include="OwlAudioThread.cpp" />
+    <ClCompile Include="OwlDecodeThread.cpp" />
     <ClCompile Include="OwlDemuxThread.cpp" />
     <ClCompile Include="OwlResample.cpp" />
     <ClCompile Include="OwlVideoThread.cpp" />
@@ -118,6 +119,7 @@
     <ClInclude Include="OwlAudioPlay.h" />
     <ClInclude Include="OwlAudioThread.h" />
     <ClInclude Include="OwlDecode.h" />
+    <ClInclude Include="OwlDecodeThread.h" />
     <ClInclude Include="OwlDemux.h" />
     <ClInclude Include="OwlDemuxThread.h" />
     <ClInclude Include="OwlResample.h" />

@@ -64,6 +64,9 @@
     <ClCompile Include="OwlDemuxThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OwlDecodeThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OwlDemux.h">
@@ -88,6 +91,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OwlDemuxThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OwlDecodeThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

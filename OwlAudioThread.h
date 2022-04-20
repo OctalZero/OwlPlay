@@ -1,21 +1,19 @@
 #pragma once
 #include <QThread>
 #include <mutex>
-#include <list>
-class OwlDecode;
+#include "OwlDecodeThread.h"
 class OwlAudioPlay;
 class OwlResample;
 struct AVCodecParameters;
-struct AVPacket;
 // 播放音频的控制类
-class OwlAudioThread : public QThread
+class OwlAudioThread : public OwlDecodeThread
 {
 public:
 	// 打开，不管成功与否都清理
 	virtual bool Open(AVCodecParameters* para, int sample_rate, int channels);
 
-	// 放入packet到缓冲队列
-	virtual void Push(AVPacket* pkt);
+	// 停止线程，清理资源
+	virtual void Close() override;
 
 	// 从缓冲队列取出packet
 	void run() override;
@@ -23,17 +21,10 @@ public:
 	OwlAudioThread();
 	virtual ~OwlAudioThread();
 public:
-	// 最大队列，缓冲约2s
-	int max_list_ = 100;
-	// 判断线程是否退出
-	bool is_exit_ = false;
 	// 当前音频播放的pts
 	long long pts_ = 0;
 protected:
-	std::mutex mutex_;
-	// 生产者消费者模式，由调用者生产packet扔到该生产队列中，再在线程中消费packet。
-	std::list<AVPacket*> packets_;
-	OwlDecode* decode_ = nullptr;  // 解码器
+	std::mutex audio_mutex_;
 	OwlAudioPlay* audio_play_ = nullptr;  // 音频播放
 	OwlResample* resample_ = nullptr;  // 重采样 
 };
