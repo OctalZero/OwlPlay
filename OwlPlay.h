@@ -1,9 +1,12 @@
+/*********************************************************************************
+  *Date:  2022.04.23
+  *Description:  播放器界面类，继承于 QWidget，
+  *				 主要处理解播放器中UI事件的响应。
+**********************************************************************************/
 #pragma once
-
 #include <QtWidgets/QWidget>
 #include "ui_OwlPlay.h"
 
-// 播放器类
 class OwlPlay : public QWidget
 {
 	Q_OBJECT
@@ -24,8 +27,11 @@ public:
 	OwlPlay(QWidget* parent = Q_NULLPTR);
 	~OwlPlay();
 public slots:
-	// 打开文件或拉流URL
+	// 打开视频文件
 	void Open();
+
+	// 填入拉流URL
+	void Pull();
 
 	// 切换播放和暂停
 	void PlayOrPause();

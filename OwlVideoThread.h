@@ -1,9 +1,13 @@
+/*********************************************************************************
+  *Date:  2022.04.23
+  *Description:  解码和显示视频的线程类，继承于 OwlDecodeThread，
+  *				 主要处理视频播放逻辑，相当于视频控制器。
+**********************************************************************************/
 #pragma once
 #include "IVideoCall.h"
 #include "OwlDecodeThread.h"
 struct AVCodecParameters;
 
-// 解码和显示视频的类
 class OwlVideoThread : public OwlDecodeThread
 {
 public:

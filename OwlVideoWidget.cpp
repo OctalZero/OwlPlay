@@ -43,8 +43,6 @@ void main(void)
 }
 );
 
-
-
 void OwlVideoWidget::Init(int width, int height)
 {
 	mutex_.lock();
@@ -139,35 +137,33 @@ OwlVideoWidget::OwlVideoWidget(QWidget* parent)
 OwlVideoWidget::~OwlVideoWidget()
 {
 }
-//准备yuv数据
-// ffmpeg -i v1080.mp4 -t 10 -s 240x128 -pix_fmt yuv420p  out240x128.yuv
-//初始化opengl
+
 void OwlVideoWidget::initializeGL()
 {
 	qDebug() << "initializeGL";
 	mutex_.lock();
-	//初始化opengl （QOpenGLFunctions继承）函数 
+	// 初始化opengl （QOpenGLFunctions继承）函数 
 	initializeOpenGLFunctions();
 
-	//program加载shader（顶点和片元）脚本
-	//片元（像素）
+	// program加载shader（顶点和片元）脚本
+	// 片元（像素）
 	qDebug() << program.addShaderFromSourceCode(QGLShader::Fragment, tString);
-	//顶点shader
+	// 顶点shader
 	qDebug() << program.addShaderFromSourceCode(QGLShader::Vertex, vString);
 
-	//设置顶点坐标的变量
+	// 设置顶点坐标的变量
 	program.bindAttributeLocation("vertexIn", A_VER);
 
-	//设置材质坐标
+	// 设置材质坐标
 	program.bindAttributeLocation("textureIn", T_VER);
 
-	//编译shader
+	// 编译shader
 	qDebug() << "program.link() = " << program.link();
 
 	qDebug() << "program.bind() = " << program.bind();
 
-	//传递顶点和材质坐标
-	//顶点
+	// 传递顶点和材质坐标
+	// 顶点
 	static const GLfloat ver[] = {
 		-1.0f,-1.0f,
 		1.0f,-1.0f,
@@ -175,7 +171,7 @@ void OwlVideoWidget::initializeGL()
 		1.0f,1.0f
 	};
 
-	//材质
+	// 材质
 	static const GLfloat tex[] = {
 		0.0f, 1.0f,
 		1.0f, 1.0f,
@@ -183,37 +179,23 @@ void OwlVideoWidget::initializeGL()
 		1.0f, 0.0f
 	};
 
-	//顶点
+	// 顶点
 	glVertexAttribPointer(A_VER, 2, GL_FLOAT, 0, 0, ver);
 	glEnableVertexAttribArray(A_VER);
 
-	//材质
+	// 材质
 	glVertexAttribPointer(T_VER, 2, GL_FLOAT, 0, 0, tex);
 	glEnableVertexAttribArray(T_VER);
 
 
-	//从shader获取材质
+	// 从shader获取材质
 	unis[0] = program.uniformLocation("tex_y");
 	unis[1] = program.uniformLocation("tex_u");
 	unis[2] = program.uniformLocation("tex_v");
 
 	mutex_.unlock();
-
-
-	//fp = fopen("out240x128.yuv", "rb");
-	//if (!fp)
-	//{
-	//	qDebug() << "out240x128.yuv file open failed!";
-	//}
-
-
-	////启动定时器
-	//QTimer* ti = new QTimer(this);
-	//connect(ti, SIGNAL(timeout()), this, SLOT(update()));
-	//ti->start(40);
 }
 
-//刷新显示
 void OwlVideoWidget::paintGL()
 {
 	/*if (feof(fp))
@@ -227,26 +209,26 @@ void OwlVideoWidget::paintGL()
 	mutex_.lock();
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texs[0]); //0层绑定到Y材质
-	//修改材质内容(复制内存内容)
+	glBindTexture(GL_TEXTURE_2D, texs[0]); // 0层绑定到Y材质
+	// 修改材质内容(复制内存内容)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_, height_, GL_RED, GL_UNSIGNED_BYTE, datas[0]);
-	//与shader uni遍历关联
+	// 与shader uni遍历关联
 	glUniform1i(unis[0], 0);
 
 
 	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, texs[1]); //1层绑定到U材质
-										   //修改材质内容(复制内存内容)
+	glBindTexture(GL_TEXTURE_2D, texs[1]); // 1层绑定到U材质
+										   // 修改材质内容(复制内存内容)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_ / 2, height_ / 2, GL_RED, GL_UNSIGNED_BYTE, datas[1]);
-	//与shader uni遍历关联
+	// 与shader uni遍历关联
 	glUniform1i(unis[1], 1);
 
 
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_2D, texs[2]); //2层绑定到V材质
-										   //修改材质内容(复制内存内容)
+	glBindTexture(GL_TEXTURE_2D, texs[2]); // 2层绑定到V材质
+										   // 修改材质内容(复制内存内容)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_ / 2, height_ / 2, GL_RED, GL_UNSIGNED_BYTE, datas[2]);
-	//与shader uni遍历关联
+	// 与shader uni遍历关联
 	glUniform1i(unis[2], 2);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

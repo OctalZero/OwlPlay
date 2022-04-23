@@ -1,9 +1,11 @@
 #include "OwlPlay.h"
-//#include <QFileDialog>
-//#include <QDebug>
-//#include <QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QLineEdit>
 #include "OwlDemuxThread.h"
 static OwlDemuxThread demux_thread;
+// 输入拉流地址
+static QString g_pull_url = "http://39.134.65.162/PLTV/88888888/224/3221225611/index.m3u8";
 
 void OwlPlay::timerEvent(QTimerEvent* e)
 {
@@ -62,16 +64,31 @@ OwlPlay::~OwlPlay()
 void OwlPlay::Open()
 {
 	// 选择文件
-	//QString name = QFileDialog::getOpenFileName(this, QString::fromLocal8Bit("选择视频文件或填入拉流URL"));
-	//if (name.isEmpty())  return;
-	//this->setWindowTitle(name);
-	//demux_thread.Open(name.toLocal8Bit(), ui.video);
-	//if (!demux_thread.Open(name.toLocal8Bit(), ui.video)) {
-	//	QMessageBox::information(0, "ERROR", "open failed!");
-	//	return;
-	//}
+	QString name = QFileDialog::getOpenFileName(this, QString::fromLocal8Bit("选择视频文件或填入拉流URL"));
+	if (name.isEmpty())  return;
+	this->setWindowTitle(name);
+	if (!demux_thread.Open(name.toLocal8Bit(), ui.video)) {
+		QMessageBox::information(0, "ERROR", "open failed!");
+		return;
+	}
 
-	demux_thread.Open("v1080.mp4", ui.video);
+	SetPause(demux_thread.is_pause_);
+	return;
+}
+
+void OwlPlay::Pull()
+{
+	// 隐藏组件
+	ui.open->setVisible(false);
+	ui.is_play->setVisible(false);
+	ui.play_pos->setVisible(false);
+
+	qDebug() << g_pull_url.toLocal8Bit() << endl;
+	if (!demux_thread.Open(g_pull_url.toLocal8Bit(), ui.video)) {
+		QMessageBox::information(0, "ERROR", "open failed!");
+		return;
+	}
+
 	SetPause(demux_thread.is_pause_);
 	return;
 }

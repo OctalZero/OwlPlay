@@ -17,12 +17,12 @@ static double r2d(AVRational r)
 bool OwlDemux::Open(const char* url)
 {
 	Close();
-	//参数设置
+	// 参数设置
 	AVDictionary* opts = NULL;
-	//设置rtsp流以tcp协议打开
+	// 设置rtsp流以tcp协议打开
 	av_dict_set(&opts, "rtsp_transport", "tcp", 0);
 
-	//网络延时时间
+	// 网络延时时间
 	av_dict_set(&opts, "max_delay", "500", 0);
 
 
@@ -31,7 +31,7 @@ bool OwlDemux::Open(const char* url)
 		&ic,
 		url,
 		0,  // 0表示自动选择解封器
-		&opts //参数设置，比如rtsp的延时时间
+		&opts  // 参数设置，比如rtsp的延时时间
 	);
 	if (re != 0)
 	{
@@ -80,9 +80,8 @@ bool OwlDemux::Open(const char* url)
 	cout << "codec_id = " << as->codecpar->codec_id << endl;
 	cout << "format = " << as->codecpar->format << endl;
 	cout << "sample_rate = " << as->codecpar->sample_rate << endl;
-	//AVSampleFormat;
 	cout << "channels = " << as->codecpar->channels << endl;
-	//一帧数据 单通道样本数 
+	//  一帧数据 单通道样本数 
 	cout << "frame_size = " << as->codecpar->frame_size << endl;
 	mutex_.unlock();
 

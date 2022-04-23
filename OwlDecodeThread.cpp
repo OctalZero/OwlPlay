@@ -1,7 +1,6 @@
 #include "OwlDecodeThread.h"
 #include "OwlDecode.h"
 
-#include <iostream>
 void OwlDecodeThread::Push(AVPacket* pkt)
 {
 	if (!pkt)  return;
@@ -9,9 +8,7 @@ void OwlDecodeThread::Push(AVPacket* pkt)
 	// 阻塞，数据不能丢
 	while (!is_exit_) {
 		mutex_.lock();
-		//std::cout << "packets_.size() = " << packets_.size() << std::endl;
 		if (packets_.size() < max_list_) {
-			//std::cout << "         数据存入栈中         " << "pack.size " << packets_.size() << std::endl;
 			packets_.push_back(pkt);
 			mutex_.unlock();
 			break;
@@ -47,12 +44,11 @@ void OwlDecodeThread::Close()
 	decode_ = nullptr;
 	mutex_.unlock();
 }
-#include <iostream>
+
 AVPacket* OwlDecodeThread::Pop()
 {
 	mutex_.lock();
 	if (packets_.empty()) {
-		//std::cout << "解码栈为空！" << std::endl;
 		mutex_.unlock();
 		return nullptr;
 	}

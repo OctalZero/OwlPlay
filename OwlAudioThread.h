@@ -1,3 +1,8 @@
+/*********************************************************************************
+  *Date:  2022.04.23
+  *Description:  解码和播放音频的线程类，继承于 OwlDecodeThread 类
+  *				 主要处理音频播放逻辑，相当于音频控制器。
+**********************************************************************************/
 #pragma once
 #include <QThread>
 #include <mutex>
@@ -5,7 +10,7 @@
 class OwlAudioPlay;
 class OwlResample;
 struct AVCodecParameters;
-// 播放音频的控制类
+
 class OwlAudioThread : public OwlDecodeThread
 {
 public:

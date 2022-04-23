@@ -1,3 +1,9 @@
+/*********************************************************************************
+  *Date:  2022.04.23
+  *Description:  解码的类，
+				 将所有需要和 FFmpeg 解码部分相关的内容放入了此类,
+				 避免其他类和 FFmpeg 耦合。
+**********************************************************************************/
 #pragma once
 #include <mutex>
 struct AVCodecParameters;
@@ -6,7 +12,7 @@ struct AVFrame;
 struct AVPacket;
 extern void OwlFreePacket(AVPacket** pkt);  // 暴露释放函数给OwlDecodeThread，避免引入FFmpeg库
 extern void OwlFreeFrame(AVFrame** frame);  // 暴露释放函数给OwlDecodeThread，避免引入FFmpeg库
-// 解码的类
+
 class OwlDecode
 {
 public:

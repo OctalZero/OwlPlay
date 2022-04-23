@@ -39,7 +39,6 @@ void OwlVideoThread::SetPause(bool is_pause)
 void OwlVideoThread::run()
 {
 	while (!is_exit_) {
-		//cout << "video running!" << endl;
 		video_mutex_.lock();
 
 		// 处理暂停
@@ -58,15 +57,6 @@ void OwlVideoThread::run()
 		}
 
 		AVPacket* packet = Pop();
-		//// 没有数据，或者decode_没有初始化好
-		//if (packets_.empty() || !decode_) {
-		//	video_mutex_.unlock();
-		//	msleep(1);
-		//	continue;
-		//}
-
-		//AVPacket* packet = packets_.front();
-		//packets_.pop_front();
 
 		bool re = decode_->Send(packet);
 		if (!re) {

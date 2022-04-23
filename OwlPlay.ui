@@ -68,6 +68,19 @@
     <string>Play</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="pull">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>530</y>
+     <width>141</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Pull</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -75,6 +88,9 @@
    <class>OwlVideoWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>OwlVideoWidget.h</header>
+   <slots>
+    <slot>Pull()</slot>
+   </slots>
   </customwidget>
   <customwidget>
    <class>OwlSlider</class>
@@ -150,11 +166,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pull</sender>
+   <signal>clicked()</signal>
+   <receiver>OwlPlayClass</receiver>
+   <slot>Pull()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>554</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>192</x>
+     <y>762</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>Open()</slot>
   <slot>PlayOrPause()</slot>
   <slot>SliderPress()</slot>
   <slot>SliderRelease()</slot>
+  <slot>Pull()</slot>
  </slots>
 </ui>

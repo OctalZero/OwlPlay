@@ -1,3 +1,8 @@
+/*********************************************************************************
+  *Date:  2022.04.23
+  *Description:  显示视频图像的类，多继承于 QOpenGLWidget，QOpenGLFunctions，IVideoCall
+  *				 主要通过 OpenGL 处理视频图像的显示。
+**********************************************************************************/
 #pragma once
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
@@ -5,7 +10,7 @@
 #include <mutex>
 #include "IVideoCall.h"
 struct AVFrame;
-// 显示视频图像的类
+
 class OwlVideoWidget : public QOpenGLWidget, protected QOpenGLFunctions, public IVideoCall
 {
 	Q_OBJECT

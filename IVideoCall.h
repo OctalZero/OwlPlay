@@ -1,6 +1,11 @@
+/*********************************************************************************
+  *Date:  2022.04.23
+  *Description:  视频显示的接口类，
+				 避免 OwlVideoWidget类 直接开放给 OwlVideoThread类
+**********************************************************************************/
 #pragma once
-// 接口类，避免 OwlVideoWidget类 直接开放给 OwlVideoThread类
 struct AVFrame;
+
 class IVideoCall
 {
 public:

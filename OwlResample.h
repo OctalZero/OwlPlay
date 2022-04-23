@@ -1,9 +1,14 @@
+/*********************************************************************************
+  *Date:  2022.04.23
+  *Description:  音频重采样类，
+  *				 主要处理音频的重采样。
+**********************************************************************************/
 #pragma once
 #include <mutex>
 struct AVCodecParameters;
 struct SwrContext;
 struct AVFrame;
-// 音频重采样的类
+
 class OwlResample
 {
 public:

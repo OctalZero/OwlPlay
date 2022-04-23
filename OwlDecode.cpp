@@ -22,9 +22,7 @@ bool OwlDecode::Open(AVCodecParameters* para)
 	if (!para)  return false;
 	Close();
 
-	//////////////////////////////////////////////////////////
-	// 解码器打开
-	// 找到解码器
+	// 解码器打开，找到解码器
 	AVCodec* codec = avcodec_find_decoder(para->codec_id);
 	if (!codec)
 	{
@@ -73,7 +71,7 @@ bool OwlDecode::Send(AVPacket* pkt)
 	}
 	int re = avcodec_send_packet(codec_context_, pkt);
 	decode_mutex_.unlock();
-	av_packet_free(&pkt); // 只有用 av_packet_alloc 分配的才能这样释放
+	av_packet_free(&pkt);  // 只有用 av_packet_alloc 分配的才能这样释放
 	if (re != 0) return false;
 
 	return true;

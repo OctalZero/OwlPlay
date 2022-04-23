@@ -128,7 +128,6 @@ void OwlDemuxThread::run()
 {
 	while (!is_exit_) {
 		mutex_.lock();
-		//cout << "demux running!" << endl;
 		// 处理暂停
 		if (is_pause_) {
 			mutex_.unlock();
@@ -139,7 +138,6 @@ void OwlDemuxThread::run()
 			mutex_.unlock();
 			msleep(5);
 			continue;
-			//cout << "没有demux" << endl;
 		}
 
 		// 音视频同步，没有考虑只有音频或只有视频的情况
@@ -150,7 +148,6 @@ void OwlDemuxThread::run()
 
 		AVPacket* pkt = demux_->Read();
 		if (!pkt) {
-			//cout << "没有pkt" << endl;
 			mutex_.unlock();
 			msleep(5);
 			continue;
@@ -164,7 +161,6 @@ void OwlDemuxThread::run()
 		}
 		else {  // 视频
 			if (video_thread_) {
-				//cout << "push video！" << endl;
 				video_thread_->Push(pkt);  // 隐患，Push中可能造成阻塞
 			}
 		}

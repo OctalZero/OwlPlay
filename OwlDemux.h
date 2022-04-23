@@ -1,10 +1,15 @@
+/*********************************************************************************
+  *Date:  2022.04.23
+  *Description:  解封装的类，
+  *				 将所有需要和 FFmpeg 解封装部分相关的内容放入了此类,
+				 避免其他类和 FFmpeg 耦合。。
+**********************************************************************************/
 #pragma once
 #include <mutex>
 struct AVFormatContext;
 struct AVPacket;
 struct AVCodecParameters;
 
-// 解封装的类
 class OwlDemux
 {
 public:
