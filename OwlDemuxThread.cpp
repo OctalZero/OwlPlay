@@ -3,6 +3,7 @@
 #include "OwlDemux.h"
 #include "OwlVideoThread.h"
 #include "OwlAudioThread.h"
+#include "OwlDecode.h"
 using namespace std;
 
 bool OwlDemuxThread::Open(const char* url, IVideoCall* video_call)
@@ -34,6 +35,7 @@ bool OwlDemuxThread::Open(const char* url, IVideoCall* video_call)
 		re = false;
 		cout << "audio_thread_->Open（）failed！" << endl;
 	}
+	total_ms_ = demux_->total_ms_;
 	mutex_.unlock();
 	cout << "OwlDemuxThread::Open：" << re << endl;
 	return re;
@@ -66,23 +68,89 @@ void OwlDemuxThread::Close()
 	mutex_.unlock();
 }
 
+void OwlDemuxThread::Clear()
+{
+	mutex_.lock();
+	if (demux_)  demux_->Clear();
+	if (video_thread_)  video_thread_->Clear();
+	if (audio_thread_)  audio_thread_->Clear();
+	mutex_.unlock();
+}
+
+void OwlDemuxThread::SetPause(bool is_pause)
+{
+	mutex_.lock();
+	is_pause_ = is_pause;
+	if (audio_thread_)  audio_thread_->SetPause(is_pause);
+	if (video_thread_)  video_thread_->SetPause(is_pause);
+	mutex_.unlock();
+}
+
+void OwlDemuxThread::Seek(double pos)
+{
+
+	mutex_.lock();
+	bool status = is_pause_;
+	mutex_.unlock();
+
+	// 暂停
+	SetPause(true);
+
+	// 清理缓冲
+	Clear();
+
+	mutex_.lock();
+	if (demux_) {
+		demux_->Seek(pos);
+
+		// 实际要显示的位置pts
+		long long seek_pts = pos * demux_->total_ms_;
+		// 暂停状态下也能刷新到seek到的位置的图像
+		while (!is_exit_) {
+			AVPacket* pkt = demux_->ReadVideo();
+			if (!pkt)  break;
+			// 如果解码到seek_pts
+			if (video_thread_->ReaintPts(pkt, seek_pts)) {
+				pts_ = seek_pts;
+				break;
+			}
+		}
+	}
+	mutex_.unlock();
+
+	// Seek时处于非暂停状态
+	if (!status) {
+		SetPause(false);
+	}
+}
+
 void OwlDemuxThread::run()
 {
 	while (!is_exit_) {
 		mutex_.lock();
-		if (!demux_) {
+		//cout << "demux running!" << endl;
+		// 处理暂停
+		if (is_pause_) {
 			mutex_.unlock();
 			msleep(5);
 			continue;
 		}
+		if (!demux_) {
+			mutex_.unlock();
+			msleep(5);
+			continue;
+			//cout << "没有demux" << endl;
+		}
 
 		// 音视频同步，没有考虑只有音频或只有视频的情况
 		if (audio_thread_ && video_thread_) {
+			pts_ = audio_thread_->pts_;
 			video_thread_->syn_pts_ = audio_thread_->pts_;
 		}
 
 		AVPacket* pkt = demux_->Read();
 		if (!pkt) {
+			//cout << "没有pkt" << endl;
 			mutex_.unlock();
 			msleep(5);
 			continue;
@@ -90,12 +158,14 @@ void OwlDemuxThread::run()
 		// 判断数据是音频
 		if (demux_->isAudio(pkt)) {
 			if (audio_thread_) {
+				//cout << "push audio！" << endl;
 				audio_thread_->Push(pkt);
 			}
 		}
 		else {  // 视频
 			if (video_thread_) {
-				video_thread_->Push(pkt);
+				//cout << "push video！" << endl;
+				video_thread_->Push(pkt);  // 隐患，Push中可能造成阻塞
 			}
 		}
 		mutex_.unlock();

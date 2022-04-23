@@ -14,6 +14,9 @@ public:
 	// 空间需要调用者释放，释放ACPacket对象和数据空间 av_packet_free
 	virtual AVPacket* Read();
 
+	// 只读视频，音频丢弃，空间释放
+	virtual AVPacket* ReadVideo();
+
 	// 判断是否为音频
 	virtual bool isAudio(AVPacket* pkt);
 
@@ -35,21 +38,15 @@ public:
 	OwlDemux();
 	virtual ~OwlDemux();
 public:
-	// 媒体总时长（毫秒）
-	int total_ms_ = 0;
-	// 材质宽高
-	int width_ = 0;
-	int height_ = 0;
-	// 音频采样率
-	int sample_rate_ = 0;
-	// 音频通道数
-	int channels_ = 0;
+	int total_ms_ = 0;  // 媒体总时长（毫秒）
+	int width_ = 0;  // 材质宽
+	int height_ = 0;  // 材质高
+	int sample_rate_ = 0;  // 音频采样率
+	int channels_ = 0;  // 音频通道数
 protected:
 	std::mutex mutex_;
-	// 解封装上下文
-	AVFormatContext* ic = NULL;
-	// 音视频索引，读取时区分音视频
-	int video_stream_ = 0;
-	int audio_stream_ = 1;
+	AVFormatContext* ic = NULL;  // 解封装上下文
+	int video_stream_ = 0;  // 视频索引，读取时区分音视频
+	int audio_stream_ = 1;  // 音频索引，读取时区分音视频
 };
 

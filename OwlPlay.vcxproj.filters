@@ -67,6 +67,9 @@
     <ClCompile Include="OwlDecodeThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OwlSlider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OwlDemux.h">
@@ -99,6 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="OwlVideoWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="OwlSlider.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

@@ -63,7 +63,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\include;$(Qt_INCLUDEPATH_)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;$(Qt_INCLUDEPATH_);.\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -104,6 +104,7 @@
     <ClCompile Include="OwlDecodeThread.cpp" />
     <ClCompile Include="OwlDemuxThread.cpp" />
     <ClCompile Include="OwlResample.cpp" />
+    <ClCompile Include="OwlSlider.cpp" />
     <ClCompile Include="OwlVideoThread.cpp" />
     <ClCompile Include="OwlVideoWidget.cpp" />
     <QtRcc Include="OwlPlay.qrc" />
@@ -123,6 +124,7 @@
     <ClInclude Include="OwlDemux.h" />
     <ClInclude Include="OwlDemuxThread.h" />
     <ClInclude Include="OwlResample.h" />
+    <QtMoc Include="OwlSlider.h" />
     <ClInclude Include="OwlVideoThread.h" />
     <QtMoc Include="OwlVideoWidget.h" />
   </ItemGroup>

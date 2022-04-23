@@ -15,14 +15,20 @@ public:
 	// 停止线程，清理资源
 	virtual void Close() override;
 
+	// 清理缓冲，音频的IO设备也有缓冲要清理，需要重写清理函数
+	virtual void Clear() override;
+
+	// 设置暂停
+	void SetPause(bool is_pause);
+
 	// 从缓冲队列取出packet
 	void run() override;
 
 	OwlAudioThread();
 	virtual ~OwlAudioThread();
 public:
-	// 当前音频播放的pts
-	long long pts_ = 0;
+	long long pts_ = 0;  // 当前音频播放的pts
+	bool is_pause_ = false;  // 是否暂停
 protected:
 	std::mutex audio_mutex_;
 	OwlAudioPlay* audio_play_ = nullptr;  // 音频播放

@@ -82,7 +82,7 @@ bool OwlDemux::Open(const char* url)
 	cout << "sample_rate = " << as->codecpar->sample_rate << endl;
 	//AVSampleFormat;
 	cout << "channels = " << as->codecpar->channels << endl;
-	//一帧数据？？ 单通道样本数 
+	//一帧数据 单通道样本数 
 	cout << "frame_size = " << as->codecpar->frame_size << endl;
 	mutex_.unlock();
 
@@ -104,11 +104,34 @@ AVPacket* OwlDemux::Read()
 		av_packet_free(&pkt);  // 释放对象
 		return nullptr;
 	}
-	// pts\dts转换为毫秒, 方便做同步
+	// pts、dts转换为毫秒, 方便做同步
 	pkt->pts = pkt->pts * (r2d(ic->streams[pkt->stream_index]->time_base) * 1000);
 	pkt->dts = pkt->dts * (r2d(ic->streams[pkt->stream_index]->time_base) * 1000);
 	mutex_.unlock();
 	//cout << pkt->pts << " " << flush;
+
+	return pkt;
+}
+
+AVPacket* OwlDemux::ReadVideo()
+{
+	mutex_.lock();
+	if (!ic) {  // 容错
+		mutex_.unlock();
+		return nullptr;
+	}
+	mutex_.unlock();
+
+	AVPacket* pkt = nullptr;
+	// 限定20帧，防止阻塞
+	for (int i = 0; i < 20; ++i) {
+		pkt = Read();
+		if (!pkt)  break;
+		if (pkt->stream_index == video_stream_) {
+			break;
+		}
+		av_packet_free(&pkt);
+	}
 
 	return pkt;
 }
@@ -164,13 +187,15 @@ bool OwlDemux::Seek(double pos)
 
 	long long seek_pos = 0;
 	// 其中一种跳转方法，做容错的话还可以考虑另外两种方法，防止duration读不到
-	seek_pos = ic->streams[video_stream_]->duration * pos;
-	int re = av_seek_frame(ic, video_stream_, seek_pos, AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_FRAME);
-	mutex_.unlock();
+	// 跳转音频
+	seek_pos = ic->streams[audio_stream_]->duration * pos;
+	int re = av_seek_frame(ic, audio_stream_, seek_pos, AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_FRAME);
 	if (re < 0) {  //返回>=0为成功
+		mutex_.unlock();
 		return false;
 	}
 
+	mutex_.unlock();
 	return true;
 }
 

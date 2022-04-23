@@ -9,6 +9,9 @@ public:
 	// 关闭音频
 	virtual void Close() = 0;
 
+	// 清理音频缓存
+	virtual void Clear() = 0;
+
 	// 返回缓冲中还没有播放的时间（毫秒ms） 
 	virtual long long GetNoPlayMs() = 0;
 
@@ -17,6 +20,9 @@ public:
 
 	// 判断音频缓冲区是否有足够空间来写
 	virtual int GetFree() = 0;
+
+	// 设置暂停
+	virtual void SetPause(bool is_pause) = 0;
 
 	// 工厂，获取具体的音频播放器，可换成不同的接口
 	static OwlAudioPlay* GetAudioPlay();

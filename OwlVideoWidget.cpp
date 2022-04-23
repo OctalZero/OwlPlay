@@ -1,5 +1,4 @@
 #include "OwlVideoWidget.h"
-#include <QDebug>
 #include <QTimer>
 extern "C" {
 #include <libavutil/frame.h>
@@ -97,7 +96,7 @@ void OwlVideoWidget::Init(int width, int height)
 void OwlVideoWidget::Repaint(AVFrame* frame)
 {
 	if (!frame)  return;
-	// 行对齐问题
+
 	mutex_.lock();
 	// 容错，保证尺寸正确
 	if (!datas[0] || width_ * height_ == 0 || frame->width != width_ || frame->height != height_) {
@@ -106,12 +105,13 @@ void OwlVideoWidget::Repaint(AVFrame* frame)
 		return;
 	}
 
+
 	if (width_ == frame->linesize[0]) {  // 无需对齐
 		memcpy(datas[0], frame->data[0], static_cast<int64_t>(width_) * height_);
 		memcpy(datas[1], frame->data[1], static_cast<int64_t>(width_) * height_ / 4);
 		memcpy(datas[2], frame->data[2], static_cast<int64_t>(width_) * height_ / 4);
 	}
-	else {
+	else {  // 行对齐问题
 		for (int i = 0; i < height_; ++i) {  // Y
 			memcpy(datas[0] + width_ * i, frame->data[0] + frame->linesize[0] * i, width_);
 		}
@@ -250,7 +250,6 @@ void OwlVideoWidget::paintGL()
 	glUniform1i(unis[2], 2);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	qDebug() << "paintGL";
 
 	mutex_.unlock();
 }

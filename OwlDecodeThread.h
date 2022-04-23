@@ -23,10 +23,9 @@ public:
 	OwlDecodeThread();
 	virtual ~OwlDecodeThread();
 public:
-	// 最大队列，缓冲约2s
-	int max_list_ = 100;
-	// 判断线程是否退出
-	bool is_exit_ = false;
+	int max_list_ = 100;  // 最大队列，缓冲约2s
+	bool is_exit_ = false;  // 判断线程是否退出
+
 protected:
 	std::mutex mutex_;
 	// 生产者消费者模式，由调用者生产packet扔到该生产队列中，再在线程中消费packet。

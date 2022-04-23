@@ -3,7 +3,7 @@
 #include <QAudioOutput>
 #include <mutex>
 // 单例模式
-class COwlAudioPlay : public OwlAudioPlay
+class QtAudioPlay : public OwlAudioPlay
 {
 public:
 	// 打开音频
@@ -42,6 +42,15 @@ public:
 		mutex_.unlock();
 	}
 
+	// 清理音频缓存
+	virtual void Clear() override {
+		mutex_.lock();
+		if (io_) {
+			io_->reset();
+		}
+		mutex_.unlock();
+	}
+
 	// 返回缓冲中还没有播放的时间（毫秒ms）
 	virtual long long GetNoPlayMs() {
 		mutex_.lock();
@@ -65,6 +74,7 @@ public:
 
 		return pts;
 	}
+
 
 	// 播放音频
 	virtual bool Write(const unsigned char* data_, int datasize_) override {
@@ -96,6 +106,22 @@ public:
 
 		return free;
 	}
+
+	void SetPause(bool is_pause) override {
+		mutex_.lock();
+		if (!output_) {
+			mutex_.unlock();
+			return;
+		}
+		if (is_pause) {
+			output_->suspend();  // 挂起音频输出缓冲 
+		}
+		else {
+			output_->resume();
+		}
+		mutex_.unlock();
+	}
+
 public:
 	QAudioOutput* output_ = nullptr;  // 音频输出数据
 	QIODevice* io_ = nullptr;  // 音频输出设备
@@ -104,7 +130,7 @@ public:
 
 OwlAudioPlay* OwlAudioPlay::GetAudioPlay()
 {
-	static COwlAudioPlay play;  // 静态变量，多次访问只会创建一次
+	static QtAudioPlay play;  // 静态变量，多次访问只会创建一次
 
 	return &play;
 }

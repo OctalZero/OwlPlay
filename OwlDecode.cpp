@@ -11,6 +11,11 @@ void OwlFreePacket(AVPacket** pkt)
 	av_packet_free(pkt);
 }
 
+void OwlFreeFrame(AVFrame** frame)
+{
+	if (!frame || !(*frame))  return;  // 容错
+	av_frame_free(frame);
+}
 
 bool OwlDecode::Open(AVCodecParameters* para)
 {
@@ -29,7 +34,7 @@ bool OwlDecode::Open(AVCodecParameters* para)
 	}
 	cout << "find the AVCodec " << para->codec_id << endl;
 
-	mutex_.lock();
+	decode_mutex_.lock();
 	// 创建解码器上下文
 	codec_context_ = avcodec_alloc_context3(codec);
 
@@ -45,13 +50,13 @@ bool OwlDecode::Open(AVCodecParameters* para)
 	if (re != 0)
 	{
 		avcodec_free_context(&codec_context_);
-		mutex_.unlock();
+		decode_mutex_.unlock();
 		char buf[1024] = { 0 };
 		av_strerror(re, buf, sizeof(buf) - 1);
 		cout << "avcodec_open2  failed! :" << buf << endl;
 		return false;
 	}
-	mutex_.unlock();
+	decode_mutex_.unlock();
 	cout << "avcodec_open2 success!" << endl;
 
 	return true;
@@ -61,13 +66,13 @@ bool OwlDecode::Send(AVPacket* pkt)
 {
 	// 容错处理
 	if (!pkt || pkt->size <= 0 || !pkt->data)  return false;
-	mutex_.lock();
+	decode_mutex_.lock();
 	if (!codec_context_) {
-		mutex_.unlock();
+		decode_mutex_.unlock();
 		return false;
 	}
 	int re = avcodec_send_packet(codec_context_, pkt);
-	mutex_.unlock();
+	decode_mutex_.unlock();
 	av_packet_free(&pkt); // 只有用 av_packet_alloc 分配的才能这样释放
 	if (re != 0) return false;
 
@@ -76,14 +81,14 @@ bool OwlDecode::Send(AVPacket* pkt)
 
 AVFrame* OwlDecode::Receive()
 {
-	mutex_.lock();
+	decode_mutex_.lock();
 	if (!codec_context_) {
-		mutex_.unlock();
+		decode_mutex_.unlock();
 		return nullptr;
 	}
 	AVFrame* frame = av_frame_alloc();
 	int re = avcodec_receive_frame(codec_context_, frame);
-	mutex_.unlock();
+	decode_mutex_.unlock();
 	if (re != 0) {
 		av_frame_free(&frame);
 		return nullptr;
@@ -95,23 +100,23 @@ AVFrame* OwlDecode::Receive()
 
 void OwlDecode::Close()
 {
-	mutex_.lock();
+	decode_mutex_.lock();
 	if (codec_context_) {
 		//avcodec_close(codec_context_);  // 该函数只清空的数据，未将指针置空
 		avcodec_free_context(&codec_context_);
 	}
 	pts_ = 0;
-	mutex_.unlock();
+	decode_mutex_.unlock();
 }
 
 void OwlDecode::Clear()
 {
-	mutex_.lock();
+	decode_mutex_.lock();
 	// 清理解码缓冲
 	if (codec_context_) {
 		avcodec_flush_buffers(codec_context_);
 	}
-	mutex_.unlock();
+	decode_mutex_.unlock();
 }
 
 OwlDecode::OwlDecode()

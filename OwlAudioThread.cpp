@@ -59,6 +59,22 @@ void OwlAudioThread::Close()
 	}
 }
 
+void OwlAudioThread::Clear()
+{
+	OwlDecodeThread::Clear();
+	mutex_.lock();
+	if (audio_play_)  audio_play_->Clear();
+	mutex_.unlock();
+}
+
+void OwlAudioThread::SetPause(bool is_pause)
+{
+	is_pause_ = is_pause;
+	if (audio_play_) {
+		audio_play_->SetPause(is_pause);
+	}
+}
+
 
 void OwlAudioThread::run()
 {
@@ -67,8 +83,16 @@ void OwlAudioThread::run()
 
 	while (!is_exit_) {
 		audio_mutex_.lock();
+		//cout << "audio running!" << endl;
 
-		//// 没有数据，或者decode_、resample_、audio_play_没有初始化号
+		// 处理暂停
+		if (is_pause_) {
+			audio_mutex_.unlock();
+			msleep(5);
+			continue;
+		}
+
+		//// 没有数据，或者decode_、resample_、audio_play_没有初始化好
 		//if (packets_.empty() || !decode_ || !resample_ || !audio_play_) {
 		//	audio_mutex_.unlock();
 		//	msleep(1);
@@ -77,9 +101,11 @@ void OwlAudioThread::run()
 
 		//AVPacket* packet = packets_.front();
 		//packets_.pop_front();
+
 		AVPacket* packet = Pop();
 		bool re = decode_->Send(packet);
 		if (!re) {
+			//cout << "无法解码音频" << endl;
 			audio_mutex_.unlock();
 			msleep(1);
 			continue;
@@ -92,14 +118,15 @@ void OwlAudioThread::run()
 			// 减去缓冲中未播放的时间 
 			pts_ = decode_->pts_ - audio_play_->GetNoPlayMs();
 
-			cout << "audio pts = " << pts_ << endl;
+			//cout << "audio pts = " << pts_ << endl;
 			// 重采样
 			int size = resample_->Resample(frame, pcm);
 			// 开始播放音频
 			while (!is_exit_) {
 				if (size <= 0)  break;
-				// 缓冲未播完，空间不够
-				if (audio_play_->GetFree() < size) {
+				// 缓冲未播完，空间不够，暂停时音频  缓冲区也应该暂停
+				if (audio_play_->GetFree() < size || is_pause_) {
+					//cout << "音频缓冲满" << endl;
 					msleep(1);
 					continue;
 				}
