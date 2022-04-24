@@ -34,10 +34,9 @@ public:
 	OwlDecode();
 	~OwlDecode();
 public:
-	// 当前解码到的pts
-	long long pts_ = 0;
+	long long pts_ = 0;  // 当前解码到的pts
 protected:
 	AVCodecContext* codec_context_ = nullptr;
-	std::mutex decode_mutex_;
+	std::mutex mutex_;
 };
 

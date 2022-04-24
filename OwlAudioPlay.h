@@ -36,8 +36,8 @@ public:
 	virtual ~OwlAudioPlay();
 
 public:
-	int sample_rate_ = 44100;
+	int sample_rate_ = 44100;  // 采样率
 	int sample_size_ = 16;  // 位数，不是字节数，是固定的，重采样后统一为16
-	int channels_ = 2;
+	int channels_ = 2;  // 通道数
 };
 

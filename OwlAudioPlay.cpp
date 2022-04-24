@@ -52,7 +52,7 @@ public:
 	}
 
 	// 返回缓冲中还没有播放的时间（毫秒ms）
-	virtual long long GetNoPlayMs() {
+	virtual long long GetNoPlayMs() override {
 		mutex_.lock();
 		if (!output_) {
 			mutex_.unlock();
@@ -63,7 +63,7 @@ public:
 		// 还未播放的字节数
 		double size = output_->bufferSize() - output_->bytesFree();
 		// 一秒音频字节大小
-		double sec_size = sample_rate_ * (sample_size_ / static_cast<double>(8)) * channels_;
+		double sec_size = sample_rate_ * (static_cast<double>(sample_size_) / 8) * channels_;
 		if (sec_size <= 0) {
 			pts = 0;
 		}

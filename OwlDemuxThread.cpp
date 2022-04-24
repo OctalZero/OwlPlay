@@ -9,7 +9,7 @@ using namespace std;
 bool OwlDemuxThread::Open(const char* url, IVideoCall* video_call)
 {
 	// ÈÝ´í
-	if (url == nullptr || url[0] == '0')  return false;
+	if (url == nullptr || url[0] == '\0')  return false;
 	mutex_.lock();
 	if (!demux_)  demux_ = new OwlDemux();
 	if (!video_thread_)  video_thread_ = new OwlVideoThread();

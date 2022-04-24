@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QLineEdit>
 #include "OwlDemuxThread.h"
+using namespace std;
 static OwlDemuxThread demux_thread;
 // 输入拉流地址
 static QString g_pull_url = "http://39.134.65.162/PLTV/88888888/224/3221225611/index.m3u8";
@@ -104,7 +105,7 @@ void OwlPlay::SliderPress()
 {
 	is_slider_press = true;
 }
-#include <iostream>
+
 void OwlPlay::SliderRelease()
 {
 	is_slider_press = false;

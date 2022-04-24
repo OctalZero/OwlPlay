@@ -18,7 +18,7 @@ bool OwlDemux::Open(const char* url)
 {
 	Close();
 	// 参数设置
-	AVDictionary* opts = NULL;
+	AVDictionary* opts = nullptr;
 	// 设置rtsp流以tcp协议打开
 	av_dict_set(&opts, "rtsp_transport", "tcp", 0);
 
@@ -42,10 +42,19 @@ bool OwlDemux::Open(const char* url)
 
 		return false;
 	}
-	cout << "open " << url << " success! " << endl;
 
-	//获取流信息,
+	//获取流信息
 	re = avformat_find_stream_info(ic, 0);
+	if (re != 0)
+	{
+		mutex_.unlock();
+		char buf[1024] = { 0 };
+		av_strerror(re, buf, sizeof(buf) - 1);
+		cout << "open " << url << " failed! :" << buf << endl;
+
+		return false;
+	}
+	cout << "open " << url << " success! " << endl;
 
 	//总时长 毫秒
 	total_ms_ = ic->duration / (AV_TIME_BASE / 1000);
@@ -189,12 +198,11 @@ bool OwlDemux::Seek(double pos)
 	// 跳转音频
 	seek_pos = ic->streams[audio_stream_]->duration * pos;
 	int re = av_seek_frame(ic, audio_stream_, seek_pos, AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_FRAME);
+	mutex_.unlock();
 	if (re < 0) {  //返回>=0为成功
-		mutex_.unlock();
 		return false;
 	}
 
-	mutex_.unlock();
 	return true;
 }
 
@@ -230,7 +238,7 @@ OwlDemux::OwlDemux()
 	demux_mutex.lock();
 	if (is_first) {
 		//初始化封装库
-		av_register_all();
+		//av_register_all();
 
 		//初始化网络库 （可以打开rtsp rtmp http 协议的流媒体视频）
 		avformat_network_init();

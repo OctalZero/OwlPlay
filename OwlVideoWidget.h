@@ -18,6 +18,7 @@ class OwlVideoWidget : public QOpenGLWidget, protected QOpenGLFunctions, public 
 public:
 	// 初始化
 	virtual void Init(int width, int height) override;
+
 	// 重绘图像，不管成功与否都释放frame空间
 	virtual void Repaint(AVFrame* frame) override;
 
@@ -34,20 +35,11 @@ protected:
 	void resizeGL(int width, int height) override;
 private:
 	std::mutex mutex_;
-
-	//shader程序
-	QGLShaderProgram program;
-
-	//shader中yuv变量地址
-	GLuint unis[3] = { 0 };
-
-	//OpenGL的 texture地址
-	GLuint texs[3] = { 0 };
-
-	//材质内存空间
-	unsigned char* datas[3] = { 0 };
-
-	int width_ = 0;
-	int height_ = 0;
+	QGLShaderProgram program;  // shader程序
+	GLuint unis[3] = { 0 };  // shader中yuv变量地址
+	GLuint texs[3] = { 0 };  // OpenGL的 texture地址
+	unsigned char* datas[3] = { 0 };  // 材质内存空间
+	int width_ = 0;  // 视频图像宽度
+	int height_ = 0;  // 视频图像长度
 
 };

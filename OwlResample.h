@@ -23,6 +23,7 @@ public:
 
 	OwlResample();
 	~OwlResample();
+public:
 	int out_format_ = 1;  // 对应 AVSampleFormat 中的 AV_SAMPLE_FMT_S16，可进行更换
 protected:
 	std::mutex mutex_;

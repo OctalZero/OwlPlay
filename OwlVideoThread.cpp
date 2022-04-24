@@ -51,7 +51,6 @@ void OwlVideoThread::run()
 		// 音视频同步, 不存在音频时不处理
 		if (syn_pts_ > 0 && syn_pts_ < decode_->pts_) {
 			video_mutex_.unlock();
-			//cout << "音视频不同步！" << endl;
 			msleep(1);
 			continue;
 		}
@@ -60,7 +59,6 @@ void OwlVideoThread::run()
 
 		bool re = decode_->Send(packet);
 		if (!re) {
-			//cout << "无法解码视频" << endl;
 			video_mutex_.unlock();
 			msleep(1);
 			continue;

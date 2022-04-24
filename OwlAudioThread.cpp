@@ -16,8 +16,6 @@ bool OwlAudioThread::Open(AVCodecParameters* para, int sample_rate, int channels
 	if (!resample_->Open(para, false)) {
 		cout << "OwlResample open failed!" << endl;
 		re = false;
-		//audio_mutex_.unlock();
-		//return false;
 	}
 
 	audio_play_->sample_rate_ = sample_rate;
@@ -26,8 +24,6 @@ bool OwlAudioThread::Open(AVCodecParameters* para, int sample_rate, int channels
 	if (!audio_play_->Open()) {
 		re = false;
 		cout << "OwlAudioPlay open failed!" << endl;
-		//audio_mutex_.unlock();
-		//return false;
 	}
 	// decode_的Open用完后会释放para，放在最后面释放
 	if (!decode_->Open(para)) {
@@ -83,7 +79,6 @@ void OwlAudioThread::run()
 
 	while (!is_exit_) {
 		audio_mutex_.lock();
-		//cout << "audio running!" << endl;
 
 		// 处理暂停
 		if (is_pause_) {
@@ -105,7 +100,6 @@ void OwlAudioThread::run()
 		AVPacket* packet = Pop();
 		bool re = decode_->Send(packet);
 		if (!re) {
-			//cout << "无法解码音频" << endl;
 			audio_mutex_.unlock();
 			msleep(1);
 			continue;

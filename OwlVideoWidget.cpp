@@ -3,14 +3,14 @@
 extern "C" {
 #include <libavutil/frame.h>
 }
-//自动加双引号
+// 自动加双引号
 #define GET_STR(x) #x
 #define A_VER 3
 #define T_VER 4
 
 FILE* fp = NULL;
 
-//顶点shader
+// 顶点shader
 const char* vString = GET_STR(
 	attribute vec4 vertexIn;
 attribute vec2 textureIn;
@@ -23,7 +23,7 @@ void main(void)
 );
 
 
-//片元shader
+// 片元shader
 const char* tString = GET_STR(
 	varying vec2 textureOut;
 uniform sampler2D tex_y;
@@ -61,31 +61,31 @@ void OwlVideoWidget::Init(int width, int height)
 	if (texs[0]) {
 		glDeleteTextures(3, texs);
 	}
-	//创建材质
+	// 创建材质
 	glGenTextures(3, texs);
 
-	//Y
+	// Y
 	glBindTexture(GL_TEXTURE_2D, texs[0]);
-	//放大过滤，线性插值   GL_NEAREST(效率高，但马赛克严重)
+	// 放大过滤，线性插值   GL_NEAREST(效率高，但马赛克严重)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//创建材质显卡空间
+	// 创建材质显卡空间
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
-	//U
+	// U
 	glBindTexture(GL_TEXTURE_2D, texs[1]);
-	//放大过滤，线性插值
+	// 放大过滤，线性插值
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//创建材质显卡空间
+	// 创建材质显卡空间
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width / 2, height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
-	//V
+	// V
 	glBindTexture(GL_TEXTURE_2D, texs[2]);
-	//放大过滤，线性插值
+	// 放大过滤，线性插值
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//创建材质显卡空间
+	// 创建材质显卡空间
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width / 2, height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
 	mutex_.unlock();
