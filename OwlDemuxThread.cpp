@@ -15,13 +15,14 @@ bool OwlDemuxThread::Open(const char* url, IVideoCall* video_call)
 	if (!video_thread_)  video_thread_ = new OwlVideoThread();
 	if (!audio_thread_)  audio_thread_ = new OwlAudioThread();
 
-	//打开解封装
+	// 打开解封装
 	bool re = demux_->Open(url);
 	if (!re) {
 		mutex_.unlock();
 		cout << "demux_->Open(url) failed!" << endl;
 		return false;
 	}
+
 	// 打开视频解码器和处理线程
 	if (!video_thread_->Open(demux_->CopyVideoPara(),
 		video_call, demux_->width_, demux_->height_)) {
@@ -30,8 +31,7 @@ bool OwlDemuxThread::Open(const char* url, IVideoCall* video_call)
 	}
 
 	// 打开音频解码器和处理线程
-	if (!audio_thread_->Open(demux_->CopyAudioPara(),
-		demux_->sample_rate_, demux_->channels_)) {
+	if (!audio_thread_->Open(demux_->CopyAudioPara())) {
 		re = false;
 		cout << "audio_thread_->Open（）failed！" << endl;
 	}
@@ -128,7 +128,7 @@ void OwlDemuxThread::run()
 {
 	while (!is_exit_) {
 		mutex_.lock();
-		// 处理暂停
+		// 处理暂停解封装阻塞
 		if (is_pause_) {
 			mutex_.unlock();
 			msleep(5);
@@ -140,27 +140,63 @@ void OwlDemuxThread::run()
 			continue;
 		}
 
+
+
 		// 音视频同步，没有考虑只有音频或只有视频的情况
 		if (audio_thread_ && video_thread_) {
 			pts_ = audio_thread_->pts_;
 			video_thread_->syn_pts_ = audio_thread_->pts_;
 		}
 
+		//bool flush_flag_ = false;  // 判断是否进行过刷新，用于改变 DemuxThread 状态
 		AVPacket* pkt = demux_->Read();
 		if (!pkt) {
-			mutex_.unlock();
-			msleep(5);
-			continue;
+			// DemuxThread 状态由读取流中变为读取结束，并刷新解码缓冲区
+			if (read_state_ == 1) {
+				cout << "!!!!!!!!!Flush!!!!!!!!!" << endl;
+				read_state_ = 2;
+				audio_thread_->is_flush_ = true;
+				video_thread_->is_flush_ = true;
+				audio_thread_->read_state_ = 2;
+				video_thread_->read_state_ = 2;
+
+				while (read_state_ == 2) {  // 阻塞等待音视频的 Decode 缓冲刷新结束
+					if (audio_thread_->read_state_ == 3
+						&& video_thread_->read_state_ == 3) {
+						read_state_ = 3;
+					}
+					msleep(5);
+				}
+				/*			flush_flag_ = true;*/
+			}
+			else {  // 阻塞
+				cout << "解封装阻塞" << endl;
+				mutex_.unlock();
+				msleep(5);
+				continue;
+			}
+
 		}
+
+		// 将读取流的状态重置为未读取流
+		if (read_state_ == 3) {
+			read_state_ = 0;
+			audio_thread_->read_state_ = 0;
+			video_thread_->read_state_ = 0;
+		}
+
 		// 判断数据是音频
 		if (demux_->isAudio(pkt)) {
 			if (audio_thread_) {
-				//cout << "push audio！" << endl;
+				read_state_ = 1;  // 改变当前流读取状态为流读取中
+				cout << "Push Audio" << endl;
 				audio_thread_->Push(pkt);
 			}
 		}
-		else {  // 视频
+		else if (demux_->isVideo(pkt)) {  // 视频
 			if (video_thread_) {
+				read_state_ = 1;
+				cout << "Push Vedio" << endl;
 				video_thread_->Push(pkt);  // 隐患，Push中可能造成阻塞
 			}
 		}

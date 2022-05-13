@@ -6,7 +6,8 @@
 using namespace std;
 static OwlDemuxThread demux_thread;
 // 输入拉流地址
-static QString g_pull_url = "http://39.134.65.162/PLTV/88888888/224/3221225611/index.m3u8";
+//static QString g_pull_url = "http://39.134.65.162/PLTV/88888888/224/3221225611/index.m3u8";
+static QString g_pull_url = "rtmp://127.0.0.1:1935/live/test";
 
 void OwlPlay::timerEvent(QTimerEvent* e)
 {

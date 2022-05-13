@@ -25,12 +25,18 @@ public:
 	// 取出一帧数据，并出栈，如果没有返回 nullptr 
 	virtual AVPacket* Pop();
 
+	// 流读取结束后，刷新 Decode 缓冲区
+	virtual void FlushDecodeBuffer();
+
 	OwlDecodeThread();
 	virtual ~OwlDecodeThread();
 public:
 	int max_list_ = 100;  // 最大队列，缓冲约2s
 	bool is_exit_ = false;  // 判断线程是否退出
-
+	bool is_pause_ = false;  // 是否暂停
+	// 读取流的状态：0->还未读取流; 1->读取流中; 2->读取流结束; 3->刷新完 Decode 缓冲区
+	int read_state_ = 0;
+	bool is_flush_ = false;  // 是否刷新 Decode 缓冲
 protected:
 	std::mutex mutex_;
 	// 生产者消费者模式，由调用者生产packet扔到该生产队列中，再在线程中消费packet。

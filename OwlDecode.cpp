@@ -60,10 +60,10 @@ bool OwlDecode::Open(AVCodecParameters* para)
 	return true;
 }
 
-bool OwlDecode::Send(AVPacket* pkt)
+bool OwlDecode::SendPacket(AVPacket* pkt)
 {
 	// 容错处理
-	if (!pkt || pkt->size <= 0 || !pkt->data)  return false;
+	if (read_state_ != 2 && (!pkt || pkt->size <= 0 || !pkt->data))  return false;
 	mutex_.lock();
 	if (!codec_context_) {
 		mutex_.unlock();
@@ -77,7 +77,7 @@ bool OwlDecode::Send(AVPacket* pkt)
 	return true;
 }
 
-AVFrame* OwlDecode::Receive()
+AVFrame* OwlDecode::ReceiveFrame()
 {
 	mutex_.lock();
 	if (!codec_context_) {
@@ -87,13 +87,32 @@ AVFrame* OwlDecode::Receive()
 	AVFrame* frame = av_frame_alloc();
 	int re = avcodec_receive_frame(codec_context_, frame);
 	mutex_.unlock();
+
+	if (re == AVERROR_EOF) {  // 判断解码器缓冲区是否刷新完
+		cout << "!!!!!!!!!!!!!EOF!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+		eof_ = true;
+		read_state_ = 3;
+	}
 	if (re != 0) {
 		av_frame_free(&frame);
 		return nullptr;
 	}
+
 	//cout << "[" << frame->linesize[0] << "]" << " " << flush;
 	pts_ = frame->pts;
 	return frame;
+}
+
+void OwlDecode::AllocEmptyPacket(AVPacket* pkt)
+{
+	pkt = av_packet_alloc();
+	pkt->data = nullptr;
+	pkt->size = 0;
+}
+
+void OwlDecode::FreeEmptyPacket(AVPacket* pkt)
+{
+	av_packet_free(&pkt);
 }
 
 void OwlDecode::Close()

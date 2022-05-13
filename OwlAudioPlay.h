@@ -21,7 +21,7 @@ public:
 	virtual long long GetNoPlayMs() = 0;
 
 	// 播放音频
-	virtual bool Write(const unsigned char* data_, int datasize_) = 0;
+	virtual bool Write(const unsigned char* data, int datasize) = 0;
 
 	// 判断音频缓冲区是否有足够空间来写
 	virtual int GetFree() = 0;
@@ -36,8 +36,8 @@ public:
 	virtual ~OwlAudioPlay();
 
 public:
-	int sample_rate_ = 44100;  // 采样率
-	int sample_size_ = 16;  // 位数，不是字节数，是固定的，重采样后统一为16
-	int channels_ = 2;  // 通道数
+	int sample_rate_ = 44100;  // 采样率，重采样后修改
+	int sample_size_ = 16;  // 位数，重采样后修改
+	int channels_ = 2;  // 通道数，重采样后修改
 };
 

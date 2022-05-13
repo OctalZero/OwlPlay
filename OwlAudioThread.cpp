@@ -5,7 +5,7 @@
 #include "OwlResample.h"
 using namespace std;
 
-bool OwlAudioThread::Open(AVCodecParameters* para, int sample_rate, int channels)
+bool OwlAudioThread::Open(AVCodecParameters* para)
 {
 	if (!para)  return false;
 	Clear();
@@ -18,13 +18,16 @@ bool OwlAudioThread::Open(AVCodecParameters* para, int sample_rate, int channels
 		re = false;
 	}
 
-	audio_play_->sample_rate_ = sample_rate;
-	audio_play_->channels_ = channels;
+	// 传值会让 QIODevice 打开出问题
+	//audio_play_->sample_rate_ = resample_->out_sample_rate_;
+	//audio_play_->channels_ = resample_->out_channel_;
+	//audio_play_->sample_size_ = resample_->out_sample_size_;
 
 	if (!audio_play_->Open()) {
-		re = false;
 		cout << "OwlAudioPlay open failed!" << endl;
+		re = false;
 	}
+
 	// decode_的Open用完后会释放para，放在最后面释放
 	if (!decode_->Open(para)) {
 		cout << "audio OwlDecode open failed!" << endl;
@@ -75,7 +78,7 @@ void OwlAudioThread::SetPause(bool is_pause)
 void OwlAudioThread::run()
 {
 	// 重采样后音频输出数据，分配10MB存放
-	unsigned char* pcm = new unsigned char[1024 * 1024 * 10];
+	unsigned char* pcm = new unsigned char[1024 * 1024 * 100];
 
 	while (!is_exit_) {
 		audio_mutex_.lock();
@@ -97,31 +100,44 @@ void OwlAudioThread::run()
 		//AVPacket* packet = packets_.front();
 		//packets_.pop_front();
 
+
+		if (is_flush_) {
+			FlushDecodeBuffer();
+		}
+
 		AVPacket* packet = Pop();
-		bool re = decode_->Send(packet);
+		bool re = decode_->SendPacket(packet);
 		if (!re) {
+			cout << "音频解码阻塞" << endl;
 			audio_mutex_.unlock();
 			msleep(1);
 			continue;
 		}
 		// 一次Send，多次Receive
 		while (!is_exit_) {
-			AVFrame* frame = decode_->Receive();
+			AVFrame* frame = decode_->ReceiveFrame();
+			// 停止刷新 Decode 缓冲区，更新读取流的状态
+			if (decode_->eof_) {
+				is_flush_ = false;
+				read_state_ = 3;
+				decode_->eof_ = false; // 重置 eof_ 标志符
+			}
 			if (!frame)  break;
 
 			// 减去缓冲中未播放的时间 
 			pts_ = decode_->pts_ - audio_play_->GetNoPlayMs();
 
-			//cout << "audio pts = " << pts_ << endl;
+			cout << "audio pts = " << pts_ << endl;
 			// 重采样
 			int size = resample_->Resample(frame, pcm);
 			// 开始播放音频
 			while (!is_exit_) {
 				if (size <= 0)  break;
-				// 缓冲未播完，空间不够，暂停时音频  缓冲区也应该暂停
+				// 缓冲未播完，空间不够，暂停时音频缓冲区也应该暂停
 				if (audio_play_->GetFree() < size || is_pause_) {
-					//cout << "音频缓冲满" << endl;
+					cout << "音频缓冲满" << endl;
 					msleep(1);
+					//usleep(1000000 / resample_->out_sample_rate_);
 					continue;
 				}
 				audio_play_->Write(pcm, size);

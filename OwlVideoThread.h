@@ -27,7 +27,6 @@ public:
 	virtual ~OwlVideoThread();
 public:
 	long long syn_pts_ = 0;  // 同步时间，由外部传入
-	bool is_pause_ = false;  // 是否暂停
 protected:
 	std::mutex video_mutex_;
 	IVideoCall* video_call_ = nullptr;  // 显示视频图像的接口

@@ -16,7 +16,7 @@ public:
 	// 打开媒体文件，或者流媒体 rtmp\http\rtsp
 	virtual bool Open(const char* url);
 
-	// 空间需要调用者释放，释放ACPacket对象和数据空间 av_packet_free
+	// 解封装，获取AVPacket，空间需要调用者释放，释放ACPacket对象和数据空间 av_packet_free
 	virtual AVPacket* Read();
 
 	// 只读视频，音频丢弃，空间释放
@@ -24,6 +24,9 @@ public:
 
 	// 判断是否为音频
 	virtual bool isAudio(AVPacket* pkt);
+
+	// 判断是否为视频
+	virtual bool isVideo(AVPacket* pkt);
 
 	// 获取视频参数，返回空间需要清理 avcodec_parameters_free
 	virtual AVCodecParameters* CopyVideoPara();

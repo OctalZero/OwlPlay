@@ -18,7 +18,7 @@ public:
 		fmt.setSampleType(QAudioFormat::UnSignedInt);
 		mutex_.lock();
 		output_ = new QAudioOutput(fmt);
-		io_ = output_->start(); //开始播放
+		io_ = output_->start(); // 开始播放
 		mutex_.unlock();
 
 		if (io_) {
@@ -77,17 +77,17 @@ public:
 
 
 	// 播放音频
-	virtual bool Write(const unsigned char* data_, int datasize_) override {
-		if (!data_ || datasize_ <= 0)  return false;
+	virtual bool Write(const unsigned char* data, int datasize) override {
+		if (!data || datasize <= 0)  return false;
 		mutex_.lock();
 		if (!output_ || !io_) {
 			mutex_.unlock();
 			return false;
 		}
 		// 返回实际写入的大小
-		int size = io_->write((char*)data_, datasize_);
+		int size = io_->write((char*)data, datasize);
 		mutex_.unlock();
-		if (size != datasize_) {
+		if (size != datasize) {
 			return false;
 		}
 

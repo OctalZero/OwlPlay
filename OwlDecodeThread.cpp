@@ -1,9 +1,12 @@
 #include "OwlDecodeThread.h"
 #include "OwlDecode.h"
 
+#include <iostream>
+using namespace std;
+
 void OwlDecodeThread::Push(AVPacket* pkt)
 {
-	if (!pkt)  return;
+	if (read_state_ != 2 && !pkt)  return;
 
 	// 阻塞，数据不能丢
 	while (!is_exit_) {
@@ -13,6 +16,7 @@ void OwlDecodeThread::Push(AVPacket* pkt)
 			mutex_.unlock();
 			break;
 		}
+		cout << "Push阻塞" << endl;
 		mutex_.unlock();
 		msleep(1);
 	}
@@ -55,8 +59,22 @@ AVPacket* OwlDecodeThread::Pop()
 	AVPacket* packet = packets_.front();
 	packets_.pop_front();
 	mutex_.unlock();
+	cout << "Pop" << endl;
 
 	return packet;
+}
+
+void OwlDecodeThread::FlushDecodeBuffer()
+{
+	decode_->read_state_ = read_state_;
+	AVPacket* empty_pkt = nullptr;
+	decode_->AllocEmptyPacket(empty_pkt);
+	if (is_flush_) {
+		Push(empty_pkt);
+	}
+	else {
+		decode_->FreeEmptyPacket(empty_pkt);
+	}
 }
 
 OwlDecodeThread::OwlDecodeThread()

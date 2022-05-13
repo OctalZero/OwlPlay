@@ -30,7 +30,7 @@ bool OwlDemux::Open(const char* url)
 	int re = avformat_open_input(
 		&ic,
 		url,
-		0,  // 0表示自动选择解封器
+		NULL,  // 自动选择解封装器
 		&opts  // 参数设置，比如rtsp的延时时间
 	);
 	if (re != 0)
@@ -43,8 +43,8 @@ bool OwlDemux::Open(const char* url)
 		return false;
 	}
 
-	//获取流信息
-	re = avformat_find_stream_info(ic, 0);
+	// 获取流信息
+	re = avformat_find_stream_info(ic, NULL);
 	if (re != 0)
 	{
 		mutex_.unlock();
@@ -147,10 +147,19 @@ AVPacket* OwlDemux::ReadVideo()
 bool OwlDemux::isAudio(AVPacket* pkt)
 {
 	if (!pkt) return false;
-	if (pkt->stream_index == video_stream_) {
-		return false;
+	if (pkt->stream_index == audio_stream_) {
+		return true;
 	}
-	return true;
+	return false;
+}
+
+bool OwlDemux::isVideo(AVPacket* pkt)
+{
+	if (!pkt) return false;
+	if (pkt->stream_index == video_stream_) {
+		return true;
+	}
+	return false;
 }
 
 AVCodecParameters* OwlDemux::CopyVideoPara()
@@ -237,10 +246,10 @@ OwlDemux::OwlDemux()
 	static std::mutex demux_mutex;
 	demux_mutex.lock();
 	if (is_first) {
-		//初始化封装库
+		// 初始化封装库
 		//av_register_all();
 
-		//初始化网络库 （可以打开rtsp rtmp http 协议的流媒体视频）
+		// 初始化网络库 （可以打开rtsp rtmp http 协议的流媒体视频）
 		avformat_network_init();
 		is_first = false;
 	}

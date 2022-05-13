@@ -15,7 +15,7 @@ class OwlAudioThread : public OwlDecodeThread
 {
 public:
 	// 打开，不管成功与否都清理
-	virtual bool Open(AVCodecParameters* para, int sample_rate, int channels);
+	virtual bool Open(AVCodecParameters* para);
 
 	// 停止线程，清理资源
 	virtual void Close() override;
@@ -33,7 +33,6 @@ public:
 	virtual ~OwlAudioThread();
 public:
 	long long pts_ = 0;  // 当前音频播放的pts
-	bool is_pause_ = false;  // 是否暂停
 protected:
 	std::mutex audio_mutex_;
 	OwlAudioPlay* audio_play_ = nullptr;  // 音频播放
