@@ -1,9 +1,10 @@
+
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ½â·â×°µÄÏß³ÌÀà£¬¼Ì³ĞÓÚ QThread£¬
-  *				 Ö÷Òª´¦Àí½â·â×°ËùĞèÒªµÄÂß¼­£¬Ïàµ±ÓÚ½â·â×°¿ØÖÆÆ÷£¬
-  *				 °üº¬½â·â×°ºóµÄ¸÷ÖÖ²ÎÊıĞÅÏ¢£¬ÔÚ´ËÀàÖĞ½«ĞÅÏ¢´«¸ø OwlVideoThread ºÍ
-  *				 OwlAudioThread¡£
+  *Description:  è§£å°è£…çš„çº¿ç¨‹ç±»ï¼Œç»§æ‰¿äº QThreadï¼Œ
+  *				 ä¸»è¦å¤„ç†è§£å°è£…æ‰€éœ€è¦çš„é€»è¾‘ï¼Œç›¸å½“äºè§£å°è£…æ§åˆ¶å™¨ï¼Œ
+  *				 åŒ…å«è§£å°è£…åçš„å„ç§å‚æ•°ä¿¡æ¯ï¼Œåœ¨æ­¤ç±»ä¸­å°†ä¿¡æ¯ä¼ ç»™ OwlVideoThread å’Œ
+  *				 OwlAudioThreadã€‚
 **********************************************************************************/
 #pragma once
 #include <QThread>
@@ -16,40 +17,40 @@ class OwlAudioThread;
 class OwlDemuxThread : public QThread
 {
 public:
-	// ´´½¨¶ÔÏó²¢´ò¿ª
+	// åˆ›å»ºå¯¹è±¡å¹¶æ‰“å¼€
 	virtual bool Open(const char* url, IVideoCall* video_call);
 
-	// Æô¶¯ËùÓĞÏß³Ì
+	// å¯åŠ¨æ‰€æœ‰çº¿ç¨‹
 	virtual void Start();
 
-	// ¹Ø±ÕÏß³Ì£¬ÇåÀí×ÊÔ´
+	// å…³é—­çº¿ç¨‹ï¼Œæ¸…ç†èµ„æº
 	virtual void Close();
 
-	// ÇåÀí»º³å
+	// æ¸…ç†ç¼“å†²
 	virtual void Clear();
 
-	// ÉèÖÃÔİÍ£
+	// è®¾ç½®æš‚åœ
 	void SetPause(bool is_pause);
 
-	// ¿ØÖÆÊÓÆµ½ø¶È
+	// æ§åˆ¶è§†é¢‘è¿›åº¦
 	virtual void Seek(double pos);
 
-	// ´¦ÀíÏß³Ì
+	// å¤„ç†çº¿ç¨‹
 	void run() override;
 
-	OwlDemuxThread();
-	virtual ~OwlDemuxThread();
+	OwlDemuxThread() = default;
+	~OwlDemuxThread();
 public:
-	bool is_exit_ = false;  // ÊÇ·ñÍË³ö
-	long long pts_ = 0;  // µ±Ç°²¥·Åµ½µÄpts
-	long long total_ms_ = 0;  // ÊÓÆµ×ÜÊ±³¤£¬½ø¶ÈÌõÊ¹ÓÃ
-	bool is_pause_ = false;  // ÊÇ·ñÔİÍ£
-	// ¶ÁÈ¡Á÷µÄ×´Ì¬£º0->»¹Î´¶ÁÈ¡Á÷; 1->¶ÁÈ¡Á÷ÖĞ; 2->¶ÁÈ¡Á÷½áÊø; 3->Ë¢ĞÂÍê Decode »º³åÇø
+	bool is_exit_ = false;  // æ˜¯å¦é€€å‡º
+	long long pts_ = 0;  // å½“å‰æ’­æ”¾åˆ°çš„pts
+	long long total_ms_ = 0;  // è§†é¢‘æ€»æ—¶é•¿ï¼Œè¿›åº¦æ¡ä½¿ç”¨
+	bool is_pause_ = false;  // æ˜¯å¦æš‚åœ
+	// è¯»å–æµçš„çŠ¶æ€ï¼š0->è¿˜æœªè¯»å–æµ; 1->è¯»å–æµä¸­; 2->è¯»å–æµç»“æŸ; 3->åˆ·æ–°å®Œ Decode ç¼“å†²åŒº
 	int read_state_ = 0;
 protected:
-	std::mutex mutex_;
-	OwlDemux* demux_ = nullptr;
-	OwlVideoThread* video_thread_ = nullptr;
-	OwlAudioThread* audio_thread_ = nullptr;
+	std::mutex mutex_;  // è§£å°è£…çº¿ç¨‹é”
+	OwlDemux* demux_ = nullptr;  // è§£å°è£…
+	OwlVideoThread* video_thread_ = nullptr;  // è§†é¢‘çº¿ç¨‹
+	OwlAudioThread* audio_thread_ = nullptr;  // éŸ³é¢‘çº¿ç¨‹
 };
 

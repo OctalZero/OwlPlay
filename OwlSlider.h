@@ -1,7 +1,7 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  »¬¶¯ÌõÀà£¬¼Ì³ĞÓÚ QSlider£¬
-  *				 Ö÷ÒªÖØÔØÁË QSlider ÀïµÄÒ»Ğ©ÏìÓ¦²Ù×÷¡£
+  *Description:  æ»‘åŠ¨æ¡ç±»ï¼Œç»§æ‰¿äº QSliderï¼Œ
+  *				 ä¸»è¦é‡è½½äº† QSlider é‡Œçš„ä¸€äº›å“åº”æ“ä½œã€‚
 **********************************************************************************/
 #pragma once
 #include <QObject>
@@ -12,7 +12,7 @@ class OwlSlider : public QSlider
 	Q_OBJECT
 
 public:
-	void mousePressEvent(QMouseEvent* e) override;
-	OwlSlider(QWidget* parent = nullptr);  // parent¸³Îªnullptr£¬·´ÕıÖ±½ÓnewÊ±Ê§°Ü
-	~OwlSlider();
+	void mousePressEvent(QMouseEvent* e) override;  // é¼ æ ‡æŒ‰å‹æ“ä½œçš„é‡å†™
+	OwlSlider(QWidget* parent = nullptr);  // parentèµ‹ä¸ºnullptrï¼Œåæ­£ç›´æ¥newæ—¶å¤±è´¥
+	~OwlSlider() = default;
 };

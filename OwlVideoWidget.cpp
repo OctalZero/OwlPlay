@@ -3,14 +3,14 @@
 extern "C" {
 #include <libavutil/frame.h>
 }
-// ×Ô¶¯¼ÓË«ÒıºÅ
+// è‡ªåŠ¨åŠ åŒå¼•å·
 #define GET_STR(x) #x
 #define A_VER 3
 #define T_VER 4
 
 FILE* fp = NULL;
 
-// ¶¥µãshader
+// é¡¶ç‚¹shader
 const char* vString = GET_STR(
 	attribute vec4 vertexIn;
 attribute vec2 textureIn;
@@ -23,7 +23,7 @@ void main(void)
 );
 
 
-// Æ¬Ôªshader
+// ç‰‡å…ƒshader
 const char* tString = GET_STR(
 	varying vec2 textureOut;
 uniform sampler2D tex_y;
@@ -49,11 +49,11 @@ void OwlVideoWidget::Init(int width, int height)
 
 	width_ = width;
 	height_ = height;
-	// ÇåÀí¿Õ¼ä
+	// æ¸…ç†ç©ºé—´
 	delete datas[0];
 	delete datas[1];
 	delete datas[2];
-	// ·ÖÅä²ÄÖÊÄÚ´æ¿Õ¼ä
+	// åˆ†é…æè´¨å†…å­˜ç©ºé—´
 	datas[0] = new unsigned char[width * height];		//Y
 	datas[1] = new unsigned char[width * height / 4];	//U
 	datas[2] = new unsigned char[width * height / 4];	//V
@@ -61,31 +61,31 @@ void OwlVideoWidget::Init(int width, int height)
 	if (texs[0]) {
 		glDeleteTextures(3, texs);
 	}
-	// ´´½¨²ÄÖÊ
+	// åˆ›å»ºæè´¨
 	glGenTextures(3, texs);
 
 	// Y
 	glBindTexture(GL_TEXTURE_2D, texs[0]);
-	// ·Å´ó¹ıÂË£¬ÏßĞÔ²åÖµ   GL_NEAREST(Ğ§ÂÊ¸ß£¬µ«ÂíÈü¿ËÑÏÖØ)
+	// æ”¾å¤§è¿‡æ»¤ï¼Œçº¿æ€§æ’å€¼   GL_NEAREST(æ•ˆç‡é«˜ï¼Œä½†é©¬èµ›å…‹ä¸¥é‡)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	// ´´½¨²ÄÖÊÏÔ¿¨¿Õ¼ä
+	// åˆ›å»ºæè´¨æ˜¾å¡ç©ºé—´
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
 	// U
 	glBindTexture(GL_TEXTURE_2D, texs[1]);
-	// ·Å´ó¹ıÂË£¬ÏßĞÔ²åÖµ
+	// æ”¾å¤§è¿‡æ»¤ï¼Œçº¿æ€§æ’å€¼
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	// ´´½¨²ÄÖÊÏÔ¿¨¿Õ¼ä
+	// åˆ›å»ºæè´¨æ˜¾å¡ç©ºé—´
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width / 2, height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
 	// V
 	glBindTexture(GL_TEXTURE_2D, texs[2]);
-	// ·Å´ó¹ıÂË£¬ÏßĞÔ²åÖµ
+	// æ”¾å¤§è¿‡æ»¤ï¼Œçº¿æ€§æ’å€¼
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	// ´´½¨²ÄÖÊÏÔ¿¨¿Õ¼ä
+	// åˆ›å»ºæè´¨æ˜¾å¡ç©ºé—´
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width / 2, height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
 	mutex_.unlock();
@@ -96,7 +96,7 @@ void OwlVideoWidget::Repaint(AVFrame* frame)
 	if (!frame)  return;
 
 	mutex_.lock();
-	// Èİ´í£¬±£Ö¤³ß´çÕıÈ·
+	// å®¹é”™ï¼Œä¿è¯å°ºå¯¸æ­£ç¡®
 	if (!datas[0] || width_ * height_ == 0 || frame->width != width_ || frame->height != height_) {
 		av_frame_free(&frame);
 		mutex_.unlock();
@@ -104,12 +104,12 @@ void OwlVideoWidget::Repaint(AVFrame* frame)
 	}
 
 
-	if (width_ == frame->linesize[0]) {  // ÎŞĞè¶ÔÆë
+	if (width_ == frame->linesize[0]) {  // æ— éœ€å¯¹é½
 		memcpy(datas[0], frame->data[0], static_cast<int64_t>(width_) * height_);
 		memcpy(datas[1], frame->data[1], static_cast<int64_t>(width_) * height_ / 4);
 		memcpy(datas[2], frame->data[2], static_cast<int64_t>(width_) * height_ / 4);
 	}
-	else {  // ĞĞ¶ÔÆëÎÊÌâ
+	else {  // è¡Œå¯¹é½é—®é¢˜
 		for (int i = 0; i < height_; ++i) {  // Y
 			memcpy(datas[0] + width_ * i, frame->data[0] + frame->linesize[0] * i, width_);
 		}
@@ -122,9 +122,9 @@ void OwlVideoWidget::Repaint(AVFrame* frame)
 	}
 
 	mutex_.unlock();
-	av_frame_free(&frame);  // ¿½±´Íê¿Õ¼äºó¼°Ê±ÊÍ·Å
+	av_frame_free(&frame);  // æ‹·è´å®Œç©ºé—´ååŠæ—¶é‡Šæ”¾
 
-	// Ë¢ĞÂÏÔÊ¾
+	// åˆ·æ–°æ˜¾ç¤º
 	update();
 
 }
@@ -134,36 +134,32 @@ OwlVideoWidget::OwlVideoWidget(QWidget* parent)
 {
 }
 
-OwlVideoWidget::~OwlVideoWidget()
-{
-}
-
 void OwlVideoWidget::initializeGL()
 {
 	qDebug() << "initializeGL";
 	mutex_.lock();
-	// ³õÊ¼»¯opengl £¨QOpenGLFunctions¼Ì³Ğ£©º¯Êı 
+	// åˆå§‹åŒ–opengl ï¼ˆQOpenGLFunctionsç»§æ‰¿ï¼‰å‡½æ•° 
 	initializeOpenGLFunctions();
 
-	// program¼ÓÔØshader£¨¶¥µãºÍÆ¬Ôª£©½Å±¾
-	// Æ¬Ôª£¨ÏñËØ£©
+	// programåŠ è½½shaderï¼ˆé¡¶ç‚¹å’Œç‰‡å…ƒï¼‰è„šæœ¬
+	// ç‰‡å…ƒï¼ˆåƒç´ ï¼‰
 	qDebug() << program.addShaderFromSourceCode(QGLShader::Fragment, tString);
-	// ¶¥µãshader
+	// é¡¶ç‚¹shader
 	qDebug() << program.addShaderFromSourceCode(QGLShader::Vertex, vString);
 
-	// ÉèÖÃ¶¥µã×ø±êµÄ±äÁ¿
+	// è®¾ç½®é¡¶ç‚¹åæ ‡çš„å˜é‡
 	program.bindAttributeLocation("vertexIn", A_VER);
 
-	// ÉèÖÃ²ÄÖÊ×ø±ê
+	// è®¾ç½®æè´¨åæ ‡
 	program.bindAttributeLocation("textureIn", T_VER);
 
-	// ±àÒëshader
+	// ç¼–è¯‘shader
 	qDebug() << "program.link() = " << program.link();
 
 	qDebug() << "program.bind() = " << program.bind();
 
-	// ´«µİ¶¥µãºÍ²ÄÖÊ×ø±ê
-	// ¶¥µã
+	// ä¼ é€’é¡¶ç‚¹å’Œæè´¨åæ ‡
+	// é¡¶ç‚¹
 	static const GLfloat ver[] = {
 		-1.0f,-1.0f,
 		1.0f,-1.0f,
@@ -171,7 +167,7 @@ void OwlVideoWidget::initializeGL()
 		1.0f,1.0f
 	};
 
-	// ²ÄÖÊ
+	// æè´¨
 	static const GLfloat tex[] = {
 		0.0f, 1.0f,
 		1.0f, 1.0f,
@@ -179,16 +175,16 @@ void OwlVideoWidget::initializeGL()
 		1.0f, 0.0f
 	};
 
-	// ¶¥µã
+	// é¡¶ç‚¹
 	glVertexAttribPointer(A_VER, 2, GL_FLOAT, 0, 0, ver);
 	glEnableVertexAttribArray(A_VER);
 
-	// ²ÄÖÊ
+	// æè´¨
 	glVertexAttribPointer(T_VER, 2, GL_FLOAT, 0, 0, tex);
 	glEnableVertexAttribArray(T_VER);
 
 
-	// ´Óshader»ñÈ¡²ÄÖÊ
+	// ä»shaderè·å–æè´¨
 	unis[0] = program.uniformLocation("tex_y");
 	unis[1] = program.uniformLocation("tex_u");
 	unis[2] = program.uniformLocation("tex_v");
@@ -209,26 +205,26 @@ void OwlVideoWidget::paintGL()
 	mutex_.lock();
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texs[0]); // 0²ã°ó¶¨µ½Y²ÄÖÊ
-	// ĞŞ¸Ä²ÄÖÊÄÚÈİ(¸´ÖÆÄÚ´æÄÚÈİ)
+	glBindTexture(GL_TEXTURE_2D, texs[0]); // 0å±‚ç»‘å®šåˆ°Yæè´¨
+	// ä¿®æ”¹æè´¨å†…å®¹(å¤åˆ¶å†…å­˜å†…å®¹)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_, height_, GL_RED, GL_UNSIGNED_BYTE, datas[0]);
-	// Óëshader uni±éÀú¹ØÁª
+	// ä¸shader uniéå†å…³è”
 	glUniform1i(unis[0], 0);
 
 
 	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, texs[1]); // 1²ã°ó¶¨µ½U²ÄÖÊ
-										   // ĞŞ¸Ä²ÄÖÊÄÚÈİ(¸´ÖÆÄÚ´æÄÚÈİ)
+	glBindTexture(GL_TEXTURE_2D, texs[1]); // 1å±‚ç»‘å®šåˆ°Uæè´¨
+										   // ä¿®æ”¹æè´¨å†…å®¹(å¤åˆ¶å†…å­˜å†…å®¹)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_ / 2, height_ / 2, GL_RED, GL_UNSIGNED_BYTE, datas[1]);
-	// Óëshader uni±éÀú¹ØÁª
+	// ä¸shader uniéå†å…³è”
 	glUniform1i(unis[1], 1);
 
 
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_2D, texs[2]); // 2²ã°ó¶¨µ½V²ÄÖÊ
-										   // ĞŞ¸Ä²ÄÖÊÄÚÈİ(¸´ÖÆÄÚ´æÄÚÈİ)
+	glBindTexture(GL_TEXTURE_2D, texs[2]); // 2å±‚ç»‘å®šåˆ°Væè´¨
+										   // ä¿®æ”¹æè´¨å†…å®¹(å¤åˆ¶å†…å­˜å†…å®¹)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_ / 2, height_ / 2, GL_RED, GL_UNSIGNED_BYTE, datas[2]);
-	// Óëshader uni±éÀú¹ØÁª
+	// ä¸shader uniéå†å…³è”
 	glUniform1i(unis[2], 2);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -237,7 +233,7 @@ void OwlVideoWidget::paintGL()
 }
 
 
-// ´°¿Ú³ß´ç±ä»¯
+// çª—å£å°ºå¯¸å˜åŒ–
 void OwlVideoWidget::resizeGL(int width, int height)
 {
 	mutex_.lock();

@@ -1,8 +1,8 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ½âÂëµÄÀà£¬
-				 ½«ËùÓĞĞèÒªºÍ FFmpeg ½âÂë²¿·ÖÏà¹ØµÄÄÚÈİ·ÅÈëÁË´ËÀà,
-				 ±ÜÃâÆäËûÀàºÍ FFmpeg ñîºÏ¡£
+  *Description:  è§£ç çš„ç±»ï¼Œ
+				 å°†æ‰€æœ‰éœ€è¦å’Œ FFmpeg è§£ç éƒ¨åˆ†ç›¸å…³çš„å†…å®¹æ”¾å…¥äº†æ­¤ç±»,
+				 é¿å…å…¶ä»–ç±»å’Œ FFmpeg è€¦åˆã€‚
 **********************************************************************************/
 #pragma once
 #include <mutex>
@@ -10,42 +10,43 @@ struct AVCodecParameters;
 struct AVCodecContext;
 struct AVFrame;
 struct AVPacket;
-extern void OwlFreePacket(AVPacket** pkt);  // ±©Â¶ÊÍ·Åº¯Êı¸øOwlDecodeThread£¬±ÜÃâÒıÈëFFmpeg¿â
-extern void OwlFreeFrame(AVFrame** frame);  // ±©Â¶ÊÍ·Åº¯Êı¸øOwlDecodeThread£¬±ÜÃâÒıÈëFFmpeg¿â
+extern void OwlFreePacket(AVPacket** pkt);  // æš´éœ²é‡Šæ”¾å‡½æ•°ç»™OwlDecodeThreadï¼Œé¿å…å¼•å…¥FFmpegåº“
+extern void OwlFreeFrame(AVFrame** frame);  // æš´éœ²é‡Šæ”¾å‡½æ•°ç»™OwlDecodeThreadï¼Œé¿å…å¼•å…¥FFmpegåº“
 
 class OwlDecode
 {
 public:
-	// ´ò¿ª½âÂëÆ÷,²»¹Ü³É¹¦Óë·ñ¶¼ÊÍ·Åpara¿Õ¼ä
+	// æ‰“å¼€è§£ç å™¨,ä¸ç®¡æˆåŠŸä¸å¦éƒ½é‡Šæ”¾paraç©ºé—´
 	virtual bool Open(AVCodecParameters* para);
 
-	// ·¢ËÍµ½½âÂëÏß³Ì£¬²»¹Ü³É¹¦Óë·ñ¶¼ÊÍ·Åpkt¿Õ¼ä£¨¶ÔÏóºÍÃ½ÌåÄÚÈİ£©
+	// å‘é€åˆ°è§£ç çº¿ç¨‹ï¼Œä¸ç®¡æˆåŠŸä¸å¦éƒ½é‡Šæ”¾pktç©ºé—´ï¼ˆå¯¹è±¡å’Œåª’ä½“å†…å®¹ï¼‰
 	virtual bool SendPacket(AVPacket* pkt);
 
-	// »ñÈ¡½âÂëÊı¾İ£¬Ò»´Îsend¿ÉÄÜĞèÒª¶à´ÎReceive£¬×îºó»ñÈ¡»º³åÖĞµÄÊı¾İSend NULLÔÙReceive¶à´Î
-	// Ã¿´Î¸´ÖÆÒ»·İ£¬ÓÉµ÷ÓÃÕßÊÍ·Å av_frame_free
+	// è·å–è§£ç æ•°æ®ï¼Œä¸€æ¬¡sendå¯èƒ½éœ€è¦å¤šæ¬¡Receiveï¼Œæœ€åè·å–ç¼“å†²ä¸­çš„æ•°æ®Send NULLå†Receiveå¤šæ¬¡
+	// æ¯æ¬¡å¤åˆ¶ä¸€ä»½ï¼Œç”±è°ƒç”¨è€…é‡Šæ”¾ av_frame_free
 	virtual AVFrame* ReceiveFrame();
 
-	// ·ÖÅäÒ»¸ö¿ÕµÄ AVPacket
+	// åˆ†é…ä¸€ä¸ªç©ºçš„ AVPacket
 	void AllocEmptyPacket(AVPacket* pkt);
-	// ÊÍ·ÅÒ»¸ö¿ÕµÄ AVPacket
+
+	// é‡Šæ”¾ä¸€ä¸ªç©ºçš„ AVPacket
 	void FreeEmptyPacket(AVPacket* pkt);
 
-	// ¹Ø±Õ
+	// å…³é—­
 	virtual void Close();
 
-	// ÇåÀí»º´æ
+	// æ¸…ç†ç¼“å­˜
 	virtual void Clear();
 
-	OwlDecode();
-	~OwlDecode();
+	OwlDecode() = default;
+	~OwlDecode() = default;
 public:
-	long long pts_ = 0;  // µ±Ç°½âÂëµ½µÄpts
-	bool eof_ = false;  // Á÷¶ÁÈ¡½áÊøµÄ±ê¼Ç
-	// ¶ÁÈ¡Á÷µÄ×´Ì¬£º0->»¹Î´¶ÁÈ¡Á÷; 1->¶ÁÈ¡Á÷ÖĞ; 2->¶ÁÈ¡Á÷½áÊø; 3->Ë¢ĞÂÍê Decode »º³åÇø
+	long long pts_ = 0;  // å½“å‰è§£ç åˆ°çš„pts
+	bool eof_ = false;  // æµè¯»å–ç»“æŸçš„æ ‡è®°
+	// è¯»å–æµçš„çŠ¶æ€ï¼š0->è¿˜æœªè¯»å–æµ; 1->è¯»å–æµä¸­; 2->è¯»å–æµç»“æŸ; 3->åˆ·æ–°å®Œ Decode ç¼“å†²åŒº
 	int read_state_ = 0;
 protected:
-	AVCodecContext* codec_context_ = nullptr; // ½âÂëÉÏÏÂÎÄ
-	std::mutex mutex_;
+	AVCodecContext* codec_context_ = nullptr; // è§£ç ä¸Šä¸‹æ–‡
+	std::mutex mutex_; // è§£ç é”
 };
 

@@ -1,43 +1,41 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ²¥·ÅÒôÆµµÄ½Ó¿ÚÀà£¬
-  *				 Ê¹ÓÃ¹¤³§Ä£Ê½£¬¿É¾ßÌå»»³É²»Í¬µÄÒôÆµ½Ó¿Ú£¬ÕâÀïÊ¹ÓÃµÄÊÇQtµÄAudio½Ó¿Ú¡£
+  *Description:  æ’­æ”¾éŸ³é¢‘çš„æ¥å£ç±»ï¼Œ
+  *				 ä½¿ç”¨å·¥å‚æ¨¡å¼ï¼Œå¯å…·ä½“æ¢æˆä¸åŒçš„éŸ³é¢‘æ¥å£ï¼Œè¿™é‡Œä½¿ç”¨çš„æ˜¯Qtçš„Audioæ¥å£ã€‚
 **********************************************************************************/
 #pragma once
-
 class OwlAudioPlay
 {
 public:
-	// ´ò¿ªÒôÆµ²¥·Å£¬¶¨ÒåÎª´¿Ğéº¯Êı£¬ÔÚ×ÓÀàÖĞÊµÏÖ
+	// æ‰“å¼€éŸ³é¢‘æ’­æ”¾ï¼Œå®šä¹‰ä¸ºçº¯è™šå‡½æ•°ï¼Œåœ¨å­ç±»ä¸­å®ç°
 	virtual bool Open() = 0;
 
-	// ¹Ø±ÕÒôÆµ
+	// å…³é—­éŸ³é¢‘
 	virtual void Close() = 0;
 
-	// ÇåÀíÒôÆµ»º´æ
+	// æ¸…ç†éŸ³é¢‘ç¼“å­˜
 	virtual void Clear() = 0;
 
-	// ·µ»Ø»º³åÖĞ»¹Ã»ÓĞ²¥·ÅµÄÊ±¼ä£¨ºÁÃëms£© 
+	// è¿”å›ç¼“å†²ä¸­è¿˜æ²¡æœ‰æ’­æ”¾çš„æ—¶é—´ï¼ˆæ¯«ç§’msï¼‰ 
 	virtual long long GetNoPlayMs() = 0;
 
-	// ²¥·ÅÒôÆµ
+	// æ’­æ”¾éŸ³é¢‘
 	virtual bool Write(const unsigned char* data, int datasize) = 0;
 
-	// ÅĞ¶ÏÒôÆµ»º³åÇøÊÇ·ñÓĞ×ã¹»¿Õ¼äÀ´Ğ´
+	// åˆ¤æ–­éŸ³é¢‘ç¼“å†²åŒºæ˜¯å¦æœ‰è¶³å¤Ÿç©ºé—´æ¥å†™
 	virtual int GetFree() = 0;
 
-	// ÉèÖÃÔİÍ£
+	// è®¾ç½®æš‚åœ
 	virtual void SetPause(bool is_pause) = 0;
 
-	// ¹¤³§£¬»ñÈ¡¾ßÌåµÄÒôÆµ²¥·ÅÆ÷£¬¿É»»³É²»Í¬µÄ½Ó¿Ú
-	static OwlAudioPlay* GetAudioPlay();
-
-	OwlAudioPlay();
-	virtual ~OwlAudioPlay();
-
+	// å•ä¾‹æ¨¡å¼
+	static OwlAudioPlay& GetAudioPlay();
+	OwlAudioPlay(const OwlAudioPlay&) = delete;
+	OwlAudioPlay& operator=(const OwlAudioPlay&) = delete;
+	OwlAudioPlay() = default;
+	virtual ~OwlAudioPlay() = default;
 public:
-	int sample_rate_ = 44100;  // ²ÉÑùÂÊ£¬ÖØ²ÉÑùºóĞŞ¸Ä
-	int sample_size_ = 16;  // Î»Êı£¬ÖØ²ÉÑùºóĞŞ¸Ä
-	int channels_ = 2;  // Í¨µÀÊı£¬ÖØ²ÉÑùºóĞŞ¸Ä
+	int sample_rate_ = 44100;  // é‡‡æ ·ç‡ï¼Œé‡é‡‡æ ·åä¿®æ”¹
+	int sample_size_ = 16;  // ä½æ•°ï¼Œé‡é‡‡æ ·åä¿®æ”¹
+	int channels_ = 2;  // é€šé“æ•°ï¼Œé‡é‡‡æ ·åä¿®æ”¹
 };
-

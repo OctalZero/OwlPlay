@@ -1,7 +1,7 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ½âÂëµÄÏß³ÌÀà£¬¼Ì³ĞÓÚ QThread Àà£¬
-  *				 Ö÷Òª´¦Àí½âÂëËùĞèÒªµÄÂß¼­£¬Ïàµ±ÓÚ½âÂë¿ØÖÆÆ÷¡£
+  *Description:  è§£ç çš„çº¿ç¨‹ç±»ï¼Œç»§æ‰¿äº QThread ç±»ï¼Œ
+  *				 ä¸»è¦å¤„ç†è§£ç æ‰€éœ€è¦çš„é€»è¾‘ï¼Œç›¸å½“äºè§£ç æ§åˆ¶å™¨ã€‚
 **********************************************************************************/
 #pragma once
 #include <list>
@@ -13,34 +13,34 @@ class OwlDecode;
 class OwlDecodeThread : public QThread
 {
 public:
-	// ·ÅÈëpacketµ½»º³å¶ÓÁĞ
+	// æ”¾å…¥packetåˆ°ç¼“å†²é˜Ÿåˆ—
 	virtual void Push(AVPacket* pkt);
 
-	// ÇåÀí¶ÓÁĞ
+	// æ¸…ç†é˜Ÿåˆ—
 	virtual void Clear();
 
-	// ÇåÀí×ÊÔ´£¬Í£Ö¹Ïß³Ì
+	// æ¸…ç†èµ„æºï¼Œåœæ­¢çº¿ç¨‹
 	virtual void Close();
 
-	// È¡³öÒ»Ö¡Êı¾İ£¬²¢³öÕ»£¬Èç¹ûÃ»ÓĞ·µ»Ø nullptr 
+	// å–å‡ºä¸€å¸§æ•°æ®ï¼Œå¹¶å‡ºæ ˆï¼Œå¦‚æœæ²¡æœ‰è¿”å› nullptr 
 	virtual AVPacket* Pop();
 
-	// Á÷¶ÁÈ¡½áÊøºó£¬Ë¢ĞÂ Decode »º³åÇø
+	// æµè¯»å–ç»“æŸåï¼Œåˆ·æ–° Decode ç¼“å†²åŒº
 	virtual void FlushDecodeBuffer();
 
 	OwlDecodeThread();
 	virtual ~OwlDecodeThread();
 public:
-	int max_list_ = 100;  // ×î´ó¶ÓÁĞ£¬»º³åÔ¼2s
-	bool is_exit_ = false;  // ÅĞ¶ÏÏß³ÌÊÇ·ñÍË³ö
-	bool is_pause_ = false;  // ÊÇ·ñÔİÍ£
-	// ¶ÁÈ¡Á÷µÄ×´Ì¬£º0->»¹Î´¶ÁÈ¡Á÷; 1->¶ÁÈ¡Á÷ÖĞ; 2->¶ÁÈ¡Á÷½áÊø; 3->Ë¢ĞÂÍê Decode »º³åÇø
+	int max_list_ = 100;  // æœ€å¤§é˜Ÿåˆ—ï¼Œç¼“å†²çº¦2s
+	bool is_exit_ = false;  // åˆ¤æ–­çº¿ç¨‹æ˜¯å¦é€€å‡º
+	bool is_pause_ = false;  // æ˜¯å¦æš‚åœ
+	// è¯»å–æµçš„çŠ¶æ€ï¼š0->è¿˜æœªè¯»å–æµ; 1->è¯»å–æµä¸­; 2->è¯»å–æµç»“æŸ; 3->åˆ·æ–°å®Œ Decode ç¼“å†²åŒº
 	int read_state_ = 0;
-	bool is_flush_ = false;  // ÊÇ·ñË¢ĞÂ Decode »º³å
+	bool is_flush_ = false;  // æ˜¯å¦åˆ·æ–° Decode ç¼“å†²
 protected:
-	std::mutex mutex_;
-	// Éú²úÕßÏû·ÑÕßÄ£Ê½£¬ÓÉµ÷ÓÃÕßÉú²úpacketÈÓµ½¸ÃÉú²ú¶ÓÁĞÖĞ£¬ÔÙÔÚÏß³ÌÖĞÏû·Ñpacket¡£
+	std::mutex mutex_;  // è§£ç çº¿ç¨‹é”
+	// ç”Ÿäº§è€…æ¶ˆè´¹è€…æ¨¡å¼ï¼Œç”±è°ƒç”¨è€…ç”Ÿäº§packetæ‰”åˆ°è¯¥ç”Ÿäº§é˜Ÿåˆ—ä¸­ï¼Œå†åœ¨çº¿ç¨‹ä¸­æ¶ˆè´¹packet
 	std::list<AVPacket*> packets_;
-	OwlDecode* decode_ = nullptr;  // ½âÂëÆ÷
+	OwlDecode* decode_ = nullptr;  // è§£ç å™¨
 };
 

@@ -1,7 +1,7 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ²¥·ÅÆ÷½çÃæÀà£¬¼Ì³ĞÓÚ QWidget£¬
-  *				 Ö÷Òª´¦Àí½â²¥·ÅÆ÷ÖĞUIÊÂ¼şµÄÏìÓ¦¡£
+  *Description:  æ’­æ”¾å™¨ç•Œé¢ç±»ï¼Œç»§æ‰¿äº QWidgetï¼Œ
+  *				 ä¸»è¦å¤„ç†è§£æ’­æ”¾å™¨ä¸­UIäº‹ä»¶çš„å“åº”ã€‚
 **********************************************************************************/
 #pragma once
 #include <QtWidgets/QWidget>
@@ -12,36 +12,36 @@ class OwlPlay : public QWidget
 	Q_OBJECT
 
 public:
-	// ¶¨Ê±Æ÷ »¬¶¯ÌõÏÔÊ¾
+	// å®šæ—¶å™¨ æ»‘åŠ¨æ¡æ˜¾ç¤º
 	void timerEvent(QTimerEvent* e) override;
 
-	// ´°¿Ú³ß´ç±ä»¯
+	// çª—å£å°ºå¯¸å˜åŒ–
 	void resizeEvent(QResizeEvent* e) override;
 
-	// Ë«»÷È«ÆÁ£¬È«ÆÁµÄÊ±ºò»á¿¨¶Ù
+	// åŒå‡»å…¨å±ï¼Œå…¨å±çš„æ—¶å€™ä¼šå¡é¡¿
 	void mouseDoubleClickEvent(QMouseEvent* e) override;
 
-	// ÇĞ»»ÔİÍ£Óë²¥·Å
+	// åˆ‡æ¢æš‚åœä¸æ’­æ”¾
 	void SetPause(bool is_pause);
 
 	OwlPlay(QWidget* parent = Q_NULLPTR);
 	~OwlPlay();
 public slots:
-	// ´ò¿ªÊÓÆµÎÄ¼ş
+	// æ‰“å¼€è§†é¢‘æ–‡ä»¶
 	void Open();
 
-	// ÌîÈëÀ­Á÷URL
+	// å¡«å…¥æ‹‰æµURL
 	void Pull();
 
-	// ÇĞ»»²¥·ÅºÍÔİÍ£
+	// åˆ‡æ¢æ’­æ”¾å’Œæš‚åœ
 	void PlayOrPause();
 
-	// °´×¡»¬¶¯Ìõ
+	// æŒ‰ä½æ»‘åŠ¨æ¡
 	void SliderPress();
 
-	// ËÉ¿ª»¬¶¯Ìõ£¬ÊÓÆµ½ø¶È»¬¶¯µ½ÏàÓ¦Î»ÖÃ
+	// æ¾å¼€æ»‘åŠ¨æ¡ï¼Œè§†é¢‘è¿›åº¦æ»‘åŠ¨åˆ°ç›¸åº”ä½ç½®
 	void SliderRelease();
 private:
-	Ui::OwlPlayClass ui;
-	bool is_slider_press = false;  // »¬¶¯ÌõÄ¬ÈÏÃ»±»°´×¡
+	Ui::OwlPlayClass ui;  // æ’­æ”¾å™¨ä¸»ç•Œé¢
+	bool is_slider_press = false; // æ»‘åŠ¨æ¡é»˜è®¤æ²¡è¢«æŒ‰ä½
 };

@@ -5,14 +5,14 @@
 #include "OwlDemuxThread.h"
 using namespace std;
 static OwlDemuxThread demux_thread;
-// ÊäÈëÀ­Á÷µØÖ·
+// è¾“å…¥æ‹‰æµåœ°å€
 //static QString g_pull_url = "http://39.134.65.162/PLTV/88888888/224/3221225611/index.m3u8";
 static QString g_pull_url = "rtmp://127.0.0.1:1935/live/test";
 
 void OwlPlay::timerEvent(QTimerEvent* e)
 {
 	if (is_slider_press)  return;
-	long long total = demux_thread.total_ms_;  // ÏÈ±£´æÏÂÀ´£¬·ÀÖ¹ÅÐ¶Ï>0Ö®ºóÔÚÆäËû½ø³Ì±»¸Ä
+	long long total = demux_thread.total_ms_;  // å…ˆä¿å­˜ä¸‹æ¥ï¼Œé˜²æ­¢åˆ¤æ–­>0ä¹‹åŽåœ¨å…¶ä»–è¿›ç¨‹è¢«æ”¹
 	if (total > 0) {
 		double pos = static_cast<double>(demux_thread.pts_) / static_cast<double>(total);
 		int play_pos = ui.play_pos->maximum() * pos;
@@ -65,8 +65,8 @@ OwlPlay::~OwlPlay()
 
 void OwlPlay::Open()
 {
-	// Ñ¡ÔñÎÄ¼þ
-	QString name = QFileDialog::getOpenFileName(this, QString::fromLocal8Bit("Ñ¡ÔñÊÓÆµÎÄ¼þ»òÌîÈëÀ­Á÷URL"));
+	// é€‰æ‹©æ–‡ä»¶
+	QString name = QFileDialog::getOpenFileName(this, QString::fromLocal8Bit("é€‰æ‹©è§†é¢‘æ–‡ä»¶æˆ–å¡«å…¥æ‹‰æµURL"));
 	if (name.isEmpty())  return;
 	this->setWindowTitle(name);
 	if (!demux_thread.Open(name.toLocal8Bit(), ui.video)) {
@@ -80,7 +80,7 @@ void OwlPlay::Open()
 
 void OwlPlay::Pull()
 {
-	// Òþ²Ø×é¼þ
+	// éšè—ç»„ä»¶
 	ui.open->setVisible(false);
 	ui.is_play->setVisible(false);
 	ui.play_pos->setVisible(false);

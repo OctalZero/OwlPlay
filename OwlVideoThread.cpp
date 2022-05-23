@@ -9,21 +9,21 @@ bool OwlVideoThread::Open(AVCodecParameters* para, IVideoCall* video_call, int w
 
 	video_mutex_.lock();
 	syn_pts_ = 0;
-	// ³õÊ¼»¯ÏÔÊ¾´°¿Ú
-	video_call_ = video_call;  // ´«µÝ»Øµ÷º¯Êý
+	// åˆå§‹åŒ–æ˜¾ç¤ºçª—å£
+	video_call_ = video_call;  // ä¼ é€’å›žè°ƒå‡½æ•°
 	if (video_call_) {
 		video_call_->Init(width, height);
 	}
 	video_mutex_.unlock();
 
 	int re = true;
-	// decode_µÄOpenÓÃÍêºó»áÊÍ·Åpara£¬·ÅÔÚ×îºóÃæÊÍ·Å
+	// decode_çš„Openç”¨å®ŒåŽä¼šé‡Šæ”¾paraï¼Œæ”¾åœ¨æœ€åŽé¢é‡Šæ”¾
 	if (!decode_->Open(para)) {
 		cout << "video OwlDecode open failed!" << endl;
 		re = false;
 	}
 
-	cout << "OwlVideoThread::Open£º" << re << endl;
+	cout << "OwlVideoThread::Openï¼š" << re << endl;
 
 	return re;
 }
@@ -41,17 +41,17 @@ void OwlVideoThread::run()
 	while (!is_exit_) {
 		video_mutex_.lock();
 
-		// ´¦ÀíÔÝÍ£
+		// å¤„ç†æš‚åœ
 		if (is_pause_) {
 			video_mutex_.unlock();
 			msleep(5);
 			continue;
 		}
 
-		// ÒôÊÓÆµÍ¬²½, ²»´æÔÚÒôÆµÊ±²»´¦Àí
+		// éŸ³è§†é¢‘åŒæ­¥, ä¸å­˜åœ¨éŸ³é¢‘æ—¶ä¸å¤„ç†
 		if (syn_pts_ > 0 && decode_->pts_ - syn_pts_ > 90
-			&& abs(decode_->pts_ - syn_pts_) < 1000) {  // È·±£ÒôÆµÖÍºó90msÒÔÄÚ£¬ÖØÐÂÍÆÁ÷ºó²»½øÐÐ×èÈû
-			cout << "ÒôÊÓÆµÍ¬²½×èÈû" << endl;
+			&& abs(decode_->pts_ - syn_pts_) < 1000) {  // ç¡®ä¿éŸ³é¢‘æ»žåŽ90msä»¥å†…ï¼Œé‡æ–°æŽ¨æµåŽä¸è¿›è¡Œé˜»å¡ž
+			cout << "éŸ³è§†é¢‘åŒæ­¥é˜»å¡ž" << endl;
 			video_mutex_.unlock();
 			msleep(1);
 			continue;
@@ -66,15 +66,15 @@ void OwlVideoThread::run()
 
 		bool re = decode_->SendPacket(packet);
 		if (!re) {
-			cout << "ÊÓÆµ½âÂë×èÈû" << endl;
+			cout << "è§†é¢‘è§£ç é˜»å¡ž" << endl;
 			video_mutex_.unlock();
 			msleep(1);
 			continue;
 		}
-		// Ò»´ÎSend£¬¶à´ÎReceive
+		// ä¸€æ¬¡Sendï¼Œå¤šæ¬¡Receive
 		while (!is_exit_) {
 			AVFrame* frame = decode_->ReceiveFrame();
-			// Í£Ö¹Ë¢ÐÂ Decode »º³åÇø£¬¸üÐÂ¶ÁÈ¡Á÷µÄ×´Ì¬
+			// åœæ­¢åˆ·æ–° Decode ç¼“å†²åŒºï¼Œæ›´æ–°è¯»å–æµçš„çŠ¶æ€
 			if (decode_->eof_) {
 				is_flush_ = false;
 				read_state_ = 3;
@@ -82,7 +82,7 @@ void OwlVideoThread::run()
 			if (!frame)  break;
 			cout << "video pts = " << decode_->pts_ << endl;
 
-			// ÏÔÊ¾ÊÓÆµ
+			// æ˜¾ç¤ºè§†é¢‘
 			if (video_call_) {
 				video_call_->Repaint(frame);
 			}
@@ -99,14 +99,14 @@ bool OwlVideoThread::ReaintPts(AVPacket* pkt, long long seek_pts)
 	bool re = decode_->SendPacket(pkt);
 	if (!re) {
 		video_mutex_.unlock();
-		return true;  // ±íÊ¾½áÊø½âÂë
+		return true;  // è¡¨ç¤ºç»“æŸè§£ç 
 	}
 	AVFrame* frame = decode_->ReceiveFrame();
 	if (!frame) {
 		video_mutex_.unlock();
-		return false;  // Ã»¶Áµ½£¬¼ÌÐø´¦ÀíÏÂÒ»Ö¡
+		return false;  // æ²¡è¯»åˆ°ï¼Œç»§ç»­å¤„ç†ä¸‹ä¸€å¸§
 	}
-	// µ½´ïÎ»ÖÃ
+	// åˆ°è¾¾ä½ç½®
 	if (decode_->pts_ >= seek_pts) {
 		if (video_call_) {
 			video_call_->Repaint(frame);
@@ -118,12 +118,4 @@ bool OwlVideoThread::ReaintPts(AVPacket* pkt, long long seek_pts)
 
 	video_mutex_.unlock();
 	return false;
-}
-
-OwlVideoThread::OwlVideoThread()
-{
-}
-
-OwlVideoThread::~OwlVideoThread()
-{
 }

@@ -5,16 +5,12 @@ void OwlSlider::mousePressEvent(QMouseEvent* e)
 	QSlider::mousePressEvent(e);
 	double pos = static_cast<double>(e->pos().x()) / width();
 	setValue(pos * this->maximum());
-	// ÖØÔØºó£¬±£Ö¤Ô­ÓĞÊÂ¼şÒ²µÃµ½´¦Àí
-	//QSlider::mousePressEvent(e);  // ´æÔÚÎÊÌâ£º²»ÄÜÍÏ¶¯µ½½áÎ²Î»ÖÃ£¬ÍÏ¶¯µ½×îºóÊ±ËÉ¿ªÊÂ¼şÃ»ÓĞÏìÓ¦
+	// é‡è½½åï¼Œä¿è¯åŸæœ‰äº‹ä»¶ä¹Ÿå¾—åˆ°å¤„ç†
+	//QSlider::mousePressEvent(e);  // å­˜åœ¨é—®é¢˜ï¼šä¸èƒ½æ‹–åŠ¨åˆ°ç»“å°¾ä½ç½®ï¼Œæ‹–åŠ¨åˆ°æœ€åæ—¶æ¾å¼€äº‹ä»¶æ²¡æœ‰å“åº”
 	QSlider::sliderReleased();
 }
 
 OwlSlider::OwlSlider(QWidget* parent)
 	: QSlider(parent)
-{
-}
-
-OwlSlider::~OwlSlider()
 {
 }

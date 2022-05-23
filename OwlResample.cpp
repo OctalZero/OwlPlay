@@ -1,4 +1,5 @@
 #include "OwlResample.h"
+#include "OwlResample.h"
 #include <iostream>
 using namespace std;
 extern "C" {
@@ -12,26 +13,26 @@ bool OwlResample::Open(AVCodecParameters* para, bool is_clear_para)
 	if (!para)  return false;
 	mutex_.lock();
 
-	//ÒôÆµÖØ²ÉÑù ÉêÇë SwrContext ½á¹¹Ìå
+	//éŸ³é¢‘é‡é‡‡æ · ç”³è¯· SwrContext ç»“æž„ä½“
 	if (!resample_context_) {
 		resample_context_ = swr_alloc();
 	}
-	// Èç¹ûresampleÎªNULL»á×Ô¶¯·ÖÅä¿Õ¼ä
+	// å¦‚æžœresampleä¸ºNULLä¼šè‡ªåŠ¨åˆ†é…ç©ºé—´
 	resample_context_ = swr_alloc_set_opts(resample_context_,
-		av_get_default_channel_layout(out_channel_),	//Êä³ö¸ñÊ½
-		(AVSampleFormat)out_format_,		//Êä³öÑù±¾¸ñÊ½ 1 AV_SAMPLE_FMT_S16
-		out_sample_rate_,					//Êä³ö²ÉÑùÂÊ
-		av_get_default_channel_layout(para->channels),//ÊäÈë¸ñÊ½
+		av_get_default_channel_layout(out_channel_),	//è¾“å‡ºæ ¼å¼
+		(AVSampleFormat)out_format_,		//è¾“å‡ºæ ·æœ¬æ ¼å¼ 1 AV_SAMPLE_FMT_S16
+		out_sample_rate_,					//è¾“å‡ºé‡‡æ ·çŽ‡
+		av_get_default_channel_layout(para->channels),//è¾“å…¥æ ¼å¼
 		(AVSampleFormat)para->format,
 		para->sample_rate,
 		0, 0
 	);
-	// ÓÃÍêÊÍ·Å²ÎÊýÖ¸Õë,Ä¬ÈÏ²»ÊÍ·Å£¬·ÀÖ¹¶à´ÎÊÍ·Å
+	// ç”¨å®Œé‡Šæ”¾å‚æ•°æŒ‡é’ˆ,é»˜è®¤ä¸é‡Šæ”¾ï¼Œé˜²æ­¢å¤šæ¬¡é‡Šæ”¾
 	if (is_clear_para) {
 		avcodec_parameters_free(&para);
 	}
 
-	// ³õÊ¼»¯ SwrContext
+	// åˆå§‹åŒ– SwrContext
 	int re = swr_init(resample_context_);
 	mutex_.unlock();
 
@@ -67,10 +68,10 @@ int OwlResample::Resample(AVFrame* in_data, unsigned char* out_data)
 
 	uint8_t* data[2] = { 0 };
 	data[0] = out_data;
-	// ¿ªÊ¼ÖØ²ÉÑù×ª»»£¬»ñÈ¡Ã¿¸öÍ¨µÀÊä³öµÄÑù±¾Êý
+	// å¼€å§‹é‡é‡‡æ ·è½¬æ¢ï¼ŒèŽ·å–æ¯ä¸ªé€šé“è¾“å‡ºçš„æ ·æœ¬æ•°
 	int re = swr_convert(resample_context_,
-		data, in_data->nb_samples,		//Êä³ö
-		(const uint8_t**)in_data->data, in_data->nb_samples	//ÊäÈë
+		data, in_data->nb_samples,		//è¾“å‡º
+		(const uint8_t**)in_data->data, in_data->nb_samples	//è¾“å…¥
 	);
 	if (re <= 0)  return re;
 	out_sample_size_ = av_get_bytes_per_sample((AVSampleFormat)out_format_);
@@ -80,10 +81,3 @@ int OwlResample::Resample(AVFrame* in_data, unsigned char* out_data)
 	return out_size;
 }
 
-OwlResample::OwlResample()
-{
-}
-
-OwlResample::~OwlResample()
-{
-}

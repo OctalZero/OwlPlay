@@ -1,8 +1,8 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ½â·â×°µÄÀà£¬
-  *				 ½«ËùÓĞĞèÒªºÍ FFmpeg ½â·â×°²¿·ÖÏà¹ØµÄÄÚÈİ·ÅÈëÁË´ËÀà,
-				 ±ÜÃâÆäËûÀàºÍ FFmpeg ñîºÏ¡£¡£
+  *Description:  è§£å°è£…çš„ç±»ï¼Œ
+  *				 å°†æ‰€æœ‰éœ€è¦å’Œ FFmpeg è§£å°è£…éƒ¨åˆ†ç›¸å…³çš„å†…å®¹æ”¾å…¥äº†æ­¤ç±»,
+				 é¿å…å…¶ä»–ç±»å’Œ FFmpeg è€¦åˆã€‚ã€‚
 **********************************************************************************/
 #pragma once
 #include <mutex>
@@ -13,48 +13,48 @@ struct AVCodecParameters;
 class OwlDemux
 {
 public:
-	// ´ò¿ªÃ½ÌåÎÄ¼ş£¬»òÕßÁ÷Ã½Ìå rtmp\http\rtsp
+	// æ‰“å¼€åª’ä½“æ–‡ä»¶ï¼Œæˆ–è€…æµåª’ä½“ rtmp\http\rtsp
 	virtual bool Open(const char* url);
 
-	// ½â·â×°£¬»ñÈ¡AVPacket£¬¿Õ¼äĞèÒªµ÷ÓÃÕßÊÍ·Å£¬ÊÍ·ÅACPacket¶ÔÏóºÍÊı¾İ¿Õ¼ä av_packet_free
+	// è§£å°è£…ï¼Œè·å–AVPacketï¼Œç©ºé—´éœ€è¦è°ƒç”¨è€…é‡Šæ”¾ï¼Œé‡Šæ”¾ACPacketå¯¹è±¡å’Œæ•°æ®ç©ºé—´ av_packet_free
 	virtual AVPacket* Read();
 
-	// Ö»¶ÁÊÓÆµ£¬ÒôÆµ¶ªÆú£¬¿Õ¼äÊÍ·Å
+	// åªè¯»è§†é¢‘ï¼ŒéŸ³é¢‘ä¸¢å¼ƒï¼Œç©ºé—´é‡Šæ”¾
 	virtual AVPacket* ReadVideo();
 
-	// ÅĞ¶ÏÊÇ·ñÎªÒôÆµ
+	// åˆ¤æ–­æ˜¯å¦ä¸ºéŸ³é¢‘
 	virtual bool isAudio(AVPacket* pkt);
 
-	// ÅĞ¶ÏÊÇ·ñÎªÊÓÆµ
+	// åˆ¤æ–­æ˜¯å¦ä¸ºè§†é¢‘
 	virtual bool isVideo(AVPacket* pkt);
 
-	// »ñÈ¡ÊÓÆµ²ÎÊı£¬·µ»Ø¿Õ¼äĞèÒªÇåÀí avcodec_parameters_free
+	// è·å–è§†é¢‘å‚æ•°ï¼Œè¿”å›ç©ºé—´éœ€è¦æ¸…ç† avcodec_parameters_free
 	virtual AVCodecParameters* CopyVideoPara();
 
-	// »ñÈ¡ÒôÆµ²ÎÊı£¬·µ»Ø¿Õ¼äĞèÒªÇåÀí avcodec_parameters_free
+	// è·å–éŸ³é¢‘å‚æ•°ï¼Œè¿”å›ç©ºé—´éœ€è¦æ¸…ç† avcodec_parameters_free
 	virtual AVCodecParameters* CopyAudioPara();
 
-	// seek Î»ÖÃ pos 0.0 ~ 1.0
+	// seek ä½ç½® pos 0.0 ~ 1.0
 	virtual bool Seek(double pos);
 
-	// Çå¿Õ¶ÁÈ¡»º´æ
+	// æ¸…ç©ºè¯»å–ç¼“å­˜
 	virtual void Clear();
 
-	// ¹Ø±Õ
+	// å…³é—­
 	virtual void Close();
 
 	OwlDemux();
-	virtual ~OwlDemux();
+	~OwlDemux() = default;
 public:
-	int total_ms_ = 0;  // Ã½Ìå×ÜÊ±³¤£¨ºÁÃë£©
-	int width_ = 0;  // ²ÄÖÊ¿í
-	int height_ = 0;  // ²ÄÖÊ¸ß
-	int sample_rate_ = 0;  // ÒôÆµ²ÉÑùÂÊ
-	int channels_ = 0;  // ÒôÆµÍ¨µÀÊı
+	int total_ms_ = 0;  // åª’ä½“æ€»æ—¶é•¿ï¼ˆæ¯«ç§’ï¼‰
+	int width_ = 0;  // æè´¨å®½
+	int height_ = 0;  // æè´¨é«˜
+	int sample_rate_ = 0;  // éŸ³é¢‘é‡‡æ ·ç‡
+	int channels_ = 0;  // éŸ³é¢‘é€šé“æ•°
 protected:
-	std::mutex mutex_;
-	AVFormatContext* ic = NULL;  // ½â·â×°ÉÏÏÂÎÄ
-	int video_stream_ = 0;  // ÊÓÆµË÷Òı£¬¶ÁÈ¡Ê±Çø·ÖÒôÊÓÆµ
-	int audio_stream_ = 1;  // ÒôÆµË÷Òı£¬¶ÁÈ¡Ê±Çø·ÖÒôÊÓÆµ
+	std::mutex mutex_;  // è§£å°è£…é” 
+	AVFormatContext* ic = NULL;  // è§£å°è£…ä¸Šä¸‹æ–‡
+	int video_stream_ = 0;  // è§†é¢‘ç´¢å¼•ï¼Œè¯»å–æ—¶åŒºåˆ†éŸ³è§†é¢‘
+	int audio_stream_ = 1;  // éŸ³é¢‘ç´¢å¼•ï¼Œè¯»å–æ—¶åŒºåˆ†éŸ³è§†é¢‘
 };
 

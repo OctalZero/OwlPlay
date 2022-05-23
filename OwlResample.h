@@ -1,7 +1,7 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ÒôÆµÖØ²ÉÑùÀà£¬
-  *				 Ö÷Òª´¦ÀíÒôÆµµÄÖØ²ÉÑù¡£
+  *Description:  éŸ³é¢‘é‡é‡‡æ ·ç±»ï¼Œ
+  *				 ä¸»è¦å¤„ç†éŸ³é¢‘çš„é‡é‡‡æ ·ã€‚
 **********************************************************************************/
 #pragma once
 #include <mutex>
@@ -12,24 +12,23 @@ struct AVFrame;
 class OwlResample
 {
 public:
-	// Êä³ö²ÎÊıºÍÊäÈë²ÎÊıÒ»ÖÂ£¬³ıÁË²ÉÑù¸ñÊ½Êä³öÎªS16£¬»áÊÍ·Åpara
+	// è¾“å‡ºå‚æ•°å’Œè¾“å…¥å‚æ•°ä¸€è‡´ï¼Œé™¤äº†é‡‡æ ·æ ¼å¼è¾“å‡ºä¸ºS16ï¼Œä¼šé‡Šæ”¾para
 	virtual bool Open(AVCodecParameters* para, bool is_clear_para = false);
 
-	// ¹Ø±Õ	
+	// å…³é—­	
 	virtual void Close();
 
-	// ·µ»ØÖØ²ÉÑùºó´óĞ¡£¬²»¹Ü³É¹¦Óë·ñ¶¼ÊÍ·Åin_data¿Õ¼ä
+	// è¿”å›é‡é‡‡æ ·åå¤§å°ï¼Œä¸ç®¡æˆåŠŸä¸å¦éƒ½é‡Šæ”¾in_dataç©ºé—´
 	virtual int Resample(AVFrame* in_data, unsigned char* out_data);
 
-	OwlResample();
-	~OwlResample();
+	OwlResample() = default;
+	~OwlResample() = default;
 public:
-	int out_format_ = 1;  // ÖØ²ÉÑùºó²ÉÑù¸ñÊ½£¬¶ÔÓ¦ AVSampleFormat ÖĞµÄ AV_SAMPLE_FMT_S16£¬¿É½øĞĞ¸ü»»
-	int out_sample_size_ = 16; // ÖØ²ÉÑùºóµÄ²ÉÑù´óĞ¡
-	int out_sample_rate_ = 44100;  // ÖØ²ÉÑùºó²ÉÑùÂÊ
-	int out_channel_ = 2;  // ÖØ²ÉÑùºóÍ¨µÀÊı
+	int out_format_ = 1;  // é‡é‡‡æ ·åé‡‡æ ·æ ¼å¼ï¼Œå¯¹åº” AVSampleFormat ä¸­çš„ AV_SAMPLE_FMT_S16ï¼Œå¯è¿›è¡Œæ›´æ¢
+	int out_sample_size_ = 16; // é‡é‡‡æ ·åçš„é‡‡æ ·å¤§å°
+	int out_sample_rate_ = 44100;  // é‡é‡‡æ ·åé‡‡æ ·ç‡
+	int out_channel_ = 2;  // é‡é‡‡æ ·åé€šé“æ•°
 protected:
-	std::mutex mutex_;
-	SwrContext* resample_context_ = nullptr;
+	std::mutex mutex_;  // é‡é‡‡æ ·é”
+	SwrContext* resample_context_ = nullptr;  // é‡é‡‡æ ·ä¸Šä¸‹æ–‡
 };
-

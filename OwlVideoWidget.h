@@ -1,7 +1,7 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ÏÔÊ¾ÊÓÆµÍ¼ÏñµÄÀà£¬¶à¼Ì³ĞÓÚ QOpenGLWidget£¬QOpenGLFunctions£¬IVideoCall
-  *				 Ö÷ÒªÍ¨¹ı OpenGL ´¦ÀíÊÓÆµÍ¼ÏñµÄÏÔÊ¾¡£
+  *Description:  æ˜¾ç¤ºè§†é¢‘å›¾åƒçš„ç±»ï¼Œå¤šç»§æ‰¿äº QOpenGLWidgetï¼ŒQOpenGLFunctionsï¼ŒIVideoCall
+  *				 ä¸»è¦é€šè¿‡ OpenGL å¤„ç†è§†é¢‘å›¾åƒçš„æ˜¾ç¤ºã€‚
 **********************************************************************************/
 #pragma once
 #include <QOpenGLWidget>
@@ -16,30 +16,30 @@ class OwlVideoWidget : public QOpenGLWidget, protected QOpenGLFunctions, public 
 	Q_OBJECT
 
 public:
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	virtual void Init(int width, int height) override;
 
-	// ÖØ»æÍ¼Ïñ£¬²»¹Ü³É¹¦Óë·ñ¶¼ÊÍ·Åframe¿Õ¼ä
+	// é‡ç»˜å›¾åƒï¼Œä¸ç®¡æˆåŠŸä¸å¦éƒ½é‡Šæ”¾frameç©ºé—´
 	virtual void Repaint(AVFrame* frame) override;
 
 	OwlVideoWidget(QWidget* parent);
-	~OwlVideoWidget();
+	~OwlVideoWidget() = default;
 protected:
-	// ³õÊ¼»¯OpenGL
+	// åˆå§‹åŒ–OpenGL
 	void initializeGL() override;
 
-	// Ë¢ĞÂÏÔÊ¾
+	// åˆ·æ–°æ˜¾ç¤º
 	void paintGL() override;
 
-	// ´°¿Ú³ß´ç±ä»¯
+	// çª—å£å°ºå¯¸å˜åŒ–
 	void resizeGL(int width, int height) override;
 private:
 	std::mutex mutex_;
-	QGLShaderProgram program;  // shader³ÌĞò
-	GLuint unis[3] = { 0 };  // shaderÖĞyuv±äÁ¿µØÖ·
-	GLuint texs[3] = { 0 };  // OpenGLµÄ textureµØÖ·
-	unsigned char* datas[3] = { 0 };  // ²ÄÖÊÄÚ´æ¿Õ¼ä
-	int width_ = 0;  // ÊÓÆµÍ¼Ïñ¿í¶È
-	int height_ = 0;  // ÊÓÆµÍ¼Ïñ³¤¶È
+	QGLShaderProgram program;  // shaderç¨‹åº
+	GLuint unis[3] = { 0 };  // shaderä¸­yuvå˜é‡åœ°å€
+	GLuint texs[3] = { 0 };  // OpenGLçš„ textureåœ°å€
+	unsigned char* datas[3] = { 0 };  // æè´¨å†…å­˜ç©ºé—´
+	int width_ = 0;  // è§†é¢‘å›¾åƒå®½åº¦
+	int height_ = 0;  // è§†é¢‘å›¾åƒé•¿åº¦
 
 };

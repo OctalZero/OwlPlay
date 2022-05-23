@@ -7,13 +7,13 @@ extern "C" {
 
 void OwlFreePacket(AVPacket** pkt)
 {
-	if (!pkt || !(*pkt))  return;  // Èİ´í
+	if (!pkt || !(*pkt))  return;  // å®¹é”™
 	av_packet_free(pkt);
 }
 
 void OwlFreeFrame(AVFrame** frame)
 {
-	if (!frame || !(*frame))  return;  // Èİ´í
+	if (!frame || !(*frame))  return;  // å®¹é”™
 	av_frame_free(frame);
 }
 
@@ -22,7 +22,7 @@ bool OwlDecode::Open(AVCodecParameters* para)
 	if (!para)  return false;
 	Close();
 
-	// ½âÂëÆ÷´ò¿ª£¬ÕÒµ½½âÂëÆ÷
+	// è§£ç å™¨æ‰“å¼€ï¼Œæ‰¾åˆ°è§£ç å™¨
 	AVCodec* codec = avcodec_find_decoder(para->codec_id);
 	if (!codec)
 	{
@@ -33,17 +33,17 @@ bool OwlDecode::Open(AVCodecParameters* para)
 	cout << "find the AVCodec " << para->codec_id << endl;
 
 	mutex_.lock();
-	// ´´½¨½âÂëÆ÷ÉÏÏÂÎÄ
+	// åˆ›å»ºè§£ç å™¨ä¸Šä¸‹æ–‡
 	codec_context_ = avcodec_alloc_context3(codec);
 
-	// ÅäÖÃ½âÂëÆ÷ÉÏÏÂÎÄ²ÎÊı
+	// é…ç½®è§£ç å™¨ä¸Šä¸‹æ–‡å‚æ•°
 	avcodec_parameters_to_context(codec_context_, para);
-	avcodec_parameters_free(&para);  // ÓÃÍêºó¼°Ê±ÊÍ·Å²ÎÊıÖ¸Õë
+	avcodec_parameters_free(&para);  // ç”¨å®ŒååŠæ—¶é‡Šæ”¾å‚æ•°æŒ‡é’ˆ
 
-	// °ËÏß³Ì½âÂë
+	// å…«çº¿ç¨‹è§£ç 
 	codec_context_->thread_count = 8;
 
-	// ´ò¿ª½âÂëÆ÷ÉÏÏÂÎÄ
+	// æ‰“å¼€è§£ç å™¨ä¸Šä¸‹æ–‡
 	int re = avcodec_open2(codec_context_, 0, 0);
 	if (re != 0)
 	{
@@ -62,7 +62,7 @@ bool OwlDecode::Open(AVCodecParameters* para)
 
 bool OwlDecode::SendPacket(AVPacket* pkt)
 {
-	// Èİ´í´¦Àí
+	// å®¹é”™å¤„ç†
 	if (read_state_ != 2 && (!pkt || pkt->size <= 0 || !pkt->data))  return false;
 	mutex_.lock();
 	if (!codec_context_) {
@@ -71,7 +71,7 @@ bool OwlDecode::SendPacket(AVPacket* pkt)
 	}
 	int re = avcodec_send_packet(codec_context_, pkt);
 	mutex_.unlock();
-	av_packet_free(&pkt);  // Ö»ÓĞÓÃ av_packet_alloc ·ÖÅäµÄ²ÅÄÜÕâÑùÊÍ·Å
+	av_packet_free(&pkt);  // åªæœ‰ç”¨ av_packet_alloc åˆ†é…çš„æ‰èƒ½è¿™æ ·é‡Šæ”¾
 	if (re != 0) return false;
 
 	return true;
@@ -88,7 +88,7 @@ AVFrame* OwlDecode::ReceiveFrame()
 	int re = avcodec_receive_frame(codec_context_, frame);
 	mutex_.unlock();
 
-	if (re == AVERROR_EOF) {  // ÅĞ¶Ï½âÂëÆ÷»º³åÇøÊÇ·ñË¢ĞÂÍê
+	if (re == AVERROR_EOF) {  // åˆ¤æ–­è§£ç å™¨ç¼“å†²åŒºæ˜¯å¦åˆ·æ–°å®Œ
 		cout << "!!!!!!!!!!!!!EOF!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
 		eof_ = true;
 		read_state_ = 3;
@@ -119,7 +119,7 @@ void OwlDecode::Close()
 {
 	mutex_.lock();
 	if (codec_context_) {
-		//avcodec_close(codec_context_);  // ¸Ãº¯ÊıÖ»Çå¿ÕµÄÊı¾İ£¬Î´½«Ö¸ÕëÖÃ¿Õ
+		//avcodec_close(codec_context_);  // è¯¥å‡½æ•°åªæ¸…ç©ºçš„æ•°æ®ï¼Œæœªå°†æŒ‡é’ˆç½®ç©º
 		avcodec_free_context(&codec_context_);
 	}
 	pts_ = 0;
@@ -129,17 +129,9 @@ void OwlDecode::Close()
 void OwlDecode::Clear()
 {
 	mutex_.lock();
-	// ÇåÀí½âÂë»º³å
+	// æ¸…ç†è§£ç ç¼“å†²
 	if (codec_context_) {
 		avcodec_flush_buffers(codec_context_);
 	}
 	mutex_.unlock();
-}
-
-OwlDecode::OwlDecode()
-{
-}
-
-OwlDecode::~OwlDecode()
-{
 }

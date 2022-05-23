@@ -8,14 +8,14 @@ using namespace std;
 
 bool OwlDemuxThread::Open(const char* url, IVideoCall* video_call)
 {
-	// Èİ´í
+	// å®¹é”™
 	if (url == nullptr || url[0] == '\0')  return false;
 	mutex_.lock();
 	if (!demux_)  demux_ = new OwlDemux();
 	if (!video_thread_)  video_thread_ = new OwlVideoThread();
 	if (!audio_thread_)  audio_thread_ = new OwlAudioThread();
 
-	// ´ò¿ª½â·â×°
+	// æ‰“å¼€è§£å°è£…
 	bool re = demux_->Open(url);
 	if (!re) {
 		mutex_.unlock();
@@ -23,21 +23,21 @@ bool OwlDemuxThread::Open(const char* url, IVideoCall* video_call)
 		return false;
 	}
 
-	// ´ò¿ªÊÓÆµ½âÂëÆ÷ºÍ´¦ÀíÏß³Ì
+	// æ‰“å¼€è§†é¢‘è§£ç å™¨å’Œå¤„ç†çº¿ç¨‹
 	if (!video_thread_->Open(demux_->CopyVideoPara(),
 		video_call, demux_->width_, demux_->height_)) {
 		re = false;
-		cout << "video_thread_->Open£¨£©failed£¡" << endl;
+		cout << "video_thread_->Openï¼ˆï¼‰failedï¼" << endl;
 	}
 
-	// ´ò¿ªÒôÆµ½âÂëÆ÷ºÍ´¦ÀíÏß³Ì
+	// æ‰“å¼€éŸ³é¢‘è§£ç å™¨å’Œå¤„ç†çº¿ç¨‹
 	if (!audio_thread_->Open(demux_->CopyAudioPara())) {
 		re = false;
-		cout << "audio_thread_->Open£¨£©failed£¡" << endl;
+		cout << "audio_thread_->Openï¼ˆï¼‰failedï¼" << endl;
 	}
 	total_ms_ = demux_->total_ms_;
 	mutex_.unlock();
-	cout << "OwlDemuxThread::Open£º" << re << endl;
+	cout << "OwlDemuxThread::Openï¼š" << re << endl;
 	return re;
 }
 
@@ -47,7 +47,7 @@ void OwlDemuxThread::Start()
 	if (!demux_)  demux_ = new OwlDemux();
 	if (!video_thread_)  video_thread_ = new OwlVideoThread();
 	if (!audio_thread_)  audio_thread_ = new OwlAudioThread();
-	// Æô¶¯µ±Ç°Ïß³Ì 
+	// å¯åŠ¨å½“å‰çº¿ç¨‹ 
 	QThread::start();
 	if (video_thread_)  video_thread_->start();
 	if (audio_thread_)	audio_thread_->start();
@@ -93,23 +93,23 @@ void OwlDemuxThread::Seek(double pos)
 	bool status = is_pause_;
 	mutex_.unlock();
 
-	// ÔİÍ£
+	// æš‚åœ
 	SetPause(true);
 
-	// ÇåÀí»º³å
+	// æ¸…ç†ç¼“å†²
 	Clear();
 
 	mutex_.lock();
 	if (demux_) {
 		demux_->Seek(pos);
 
-		// Êµ¼ÊÒªÏÔÊ¾µÄÎ»ÖÃpts
+		// å®é™…è¦æ˜¾ç¤ºçš„ä½ç½®pts
 		long long seek_pts = pos * demux_->total_ms_;
-		// ÔİÍ£×´Ì¬ÏÂÒ²ÄÜË¢ĞÂµ½seekµ½µÄÎ»ÖÃµÄÍ¼Ïñ
+		// æš‚åœçŠ¶æ€ä¸‹ä¹Ÿèƒ½åˆ·æ–°åˆ°seekåˆ°çš„ä½ç½®çš„å›¾åƒ
 		while (!is_exit_) {
 			AVPacket* pkt = demux_->ReadVideo();
 			if (!pkt)  break;
-			// Èç¹û½âÂëµ½seek_pts
+			// å¦‚æœè§£ç åˆ°seek_pts
 			if (video_thread_->ReaintPts(pkt, seek_pts)) {
 				pts_ = seek_pts;
 				break;
@@ -118,7 +118,7 @@ void OwlDemuxThread::Seek(double pos)
 	}
 	mutex_.unlock();
 
-	// SeekÊ±´¦ÓÚ·ÇÔİÍ£×´Ì¬
+	// Seekæ—¶å¤„äºéæš‚åœçŠ¶æ€
 	if (!status) {
 		SetPause(false);
 	}
@@ -128,7 +128,7 @@ void OwlDemuxThread::run()
 {
 	while (!is_exit_) {
 		mutex_.lock();
-		// ´¦ÀíÔİÍ£½â·â×°×èÈû
+		// å¤„ç†æš‚åœè§£å°è£…é˜»å¡
 		if (is_pause_) {
 			mutex_.unlock();
 			msleep(5);
@@ -142,35 +142,36 @@ void OwlDemuxThread::run()
 
 
 
-		// ÒôÊÓÆµÍ¬²½£¬Ã»ÓĞ¿¼ÂÇÖ»ÓĞÒôÆµ»òÖ»ÓĞÊÓÆµµÄÇé¿ö
+		// éŸ³è§†é¢‘åŒæ­¥ï¼Œæ²¡æœ‰è€ƒè™‘åªæœ‰éŸ³é¢‘æˆ–åªæœ‰è§†é¢‘çš„æƒ…å†µ
 		if (audio_thread_ && video_thread_) {
 			pts_ = audio_thread_->pts_;
 			video_thread_->syn_pts_ = audio_thread_->pts_;
 		}
 
-		//bool flush_flag_ = false;  // ÅĞ¶ÏÊÇ·ñ½øĞĞ¹ıË¢ĞÂ£¬ÓÃÓÚ¸Ä±ä DemuxThread ×´Ì¬
+		//bool flush_flag_ = false;  // åˆ¤æ–­æ˜¯å¦è¿›è¡Œè¿‡åˆ·æ–°ï¼Œç”¨äºæ”¹å˜ DemuxThread çŠ¶æ€
 		AVPacket* pkt = demux_->Read();
 		if (!pkt) {
-			// DemuxThread ×´Ì¬ÓÉ¶ÁÈ¡Á÷ÖĞ±äÎª¶ÁÈ¡½áÊø£¬²¢Ë¢ĞÂ½âÂë»º³åÇø
+			// DemuxThread çŠ¶æ€ç”±è¯»å–æµä¸­å˜ä¸ºè¯»å–ç»“æŸï¼Œå¹¶åˆ·æ–°è§£ç ç¼“å†²åŒº
 			if (read_state_ == 1) {
 				cout << "!!!!!!!!!Flush!!!!!!!!!" << endl;
 				read_state_ = 2;
-				audio_thread_->is_flush_ = true;
-				video_thread_->is_flush_ = true;
-				audio_thread_->read_state_ = 2;
-				video_thread_->read_state_ = 2;
+				if (audio_thread_ && video_thread_) {
+					audio_thread_->is_flush_ = true;
+					video_thread_->is_flush_ = true;
+					audio_thread_->read_state_ = 2;
+					video_thread_->read_state_ = 2;
 
-				while (read_state_ == 2) {  // ×èÈûµÈ´ıÒôÊÓÆµµÄ Decode »º³åË¢ĞÂ½áÊø
-					if (audio_thread_->read_state_ == 3
-						&& video_thread_->read_state_ == 3) {
-						read_state_ = 3;
+					while (read_state_ == 2) {  // é˜»å¡ç­‰å¾…éŸ³è§†é¢‘çš„ Decode ç¼“å†²åˆ·æ–°ç»“æŸ
+						if (audio_thread_->read_state_ == 3
+							&& video_thread_->read_state_ == 3) {
+							read_state_ = 3;
+						}
+						msleep(5);
 					}
-					msleep(5);
 				}
-				/*			flush_flag_ = true;*/
 			}
-			else {  // ×èÈû
-				cout << "½â·â×°×èÈû" << endl;
+			else {  // é˜»å¡
+				cout << "è§£å°è£…é˜»å¡" << endl;
 				mutex_.unlock();
 				msleep(5);
 				continue;
@@ -178,40 +179,38 @@ void OwlDemuxThread::run()
 
 		}
 
-		// ½«¶ÁÈ¡Á÷µÄ×´Ì¬ÖØÖÃÎªÎ´¶ÁÈ¡Á÷
+		// å°†è¯»å–æµçš„çŠ¶æ€é‡ç½®ä¸ºæœªè¯»å–æµ
 		if (read_state_ == 3) {
 			read_state_ = 0;
-			audio_thread_->read_state_ = 0;
-			video_thread_->read_state_ = 0;
+			if (audio_thread_ && video_thread_) {
+				audio_thread_->read_state_ = 0;
+				video_thread_->read_state_ = 0;
+			}
 		}
 
-		// ÅĞ¶ÏÊı¾İÊÇÒôÆµ
+		// åˆ¤æ–­æ•°æ®æ˜¯éŸ³é¢‘
 		if (demux_->isAudio(pkt)) {
 			if (audio_thread_) {
-				read_state_ = 1;  // ¸Ä±äµ±Ç°Á÷¶ÁÈ¡×´Ì¬ÎªÁ÷¶ÁÈ¡ÖĞ
+				read_state_ = 1;  // æ”¹å˜å½“å‰æµè¯»å–çŠ¶æ€ä¸ºæµè¯»å–ä¸­
 				cout << "Push Audio" << endl;
 				audio_thread_->Push(pkt);
 			}
 		}
-		else if (demux_->isVideo(pkt)) {  // ÊÓÆµ
+		else if (demux_->isVideo(pkt)) {  // è§†é¢‘
 			if (video_thread_) {
 				read_state_ = 1;
 				cout << "Push Vedio" << endl;
-				video_thread_->Push(pkt);  // Òş»¼£¬PushÖĞ¿ÉÄÜÔì³É×èÈû
+				video_thread_->Push(pkt);  // éšæ‚£ï¼ŒPushä¸­å¯èƒ½é€ æˆé˜»å¡
 			}
 		}
 		mutex_.unlock();
-		msleep(1);  // ·ÀÖ¹¶ÁÈ¡Ì«¿ì£¬ÒôÊÓÆµÍ¬²½À´²»¼°×ö
+		msleep(1);  // é˜²æ­¢è¯»å–å¤ªå¿«ï¼ŒéŸ³è§†é¢‘åŒæ­¥æ¥ä¸åŠåš
 	}
-}
-
-OwlDemuxThread::OwlDemuxThread()
-{
 }
 
 OwlDemuxThread::~OwlDemuxThread()
 {
-	// ·ÀÖ¹Ïß³Ìå´µô
+	// é˜²æ­¢çº¿ç¨‹å®•æ‰
 	is_exit_ = true;
 	wait();
 }

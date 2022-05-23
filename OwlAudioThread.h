@@ -1,7 +1,7 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ½âÂëºÍ²¥·ÅÒôÆµµÄÏß³ÌÀà£¬¼Ì³ĞÓÚ OwlDecodeThread Àà
-  *				 Ö÷Òª´¦ÀíÒôÆµ²¥·ÅÂß¼­£¬Ïàµ±ÓÚÒôÆµ¿ØÖÆÆ÷¡£
+  *Description:  è§£ç å’Œæ’­æ”¾éŸ³é¢‘çš„çº¿ç¨‹ç±»ï¼Œç»§æ‰¿äº OwlDecodeThread ç±»
+  *				 ä¸»è¦å¤„ç†éŸ³é¢‘æ’­æ”¾é€»è¾‘ï¼Œç›¸å½“äºéŸ³é¢‘æ§åˆ¶å™¨ã€‚
 **********************************************************************************/
 #pragma once
 #include <QThread>
@@ -14,28 +14,28 @@ struct AVCodecParameters;
 class OwlAudioThread : public OwlDecodeThread
 {
 public:
-	// ´ò¿ª£¬²»¹Ü³É¹¦Óë·ñ¶¼ÇåÀí
+	// æ‰“å¼€ï¼Œä¸ç®¡æˆåŠŸä¸å¦éƒ½æ¸…ç†
 	virtual bool Open(AVCodecParameters* para);
 
-	// Í£Ö¹Ïß³Ì£¬ÇåÀí×ÊÔ´
+	// åœæ­¢çº¿ç¨‹ï¼Œæ¸…ç†èµ„æº
 	virtual void Close() override;
 
-	// ÇåÀí»º³å£¬ÒôÆµµÄIOÉè±¸Ò²ÓĞ»º³åÒªÇåÀí£¬ĞèÒªÖØĞ´ÇåÀíº¯Êı
+	// æ¸…ç†ç¼“å†²ï¼ŒéŸ³é¢‘çš„IOè®¾å¤‡ä¹Ÿæœ‰ç¼“å†²è¦æ¸…ç†ï¼Œéœ€è¦é‡å†™æ¸…ç†å‡½æ•°
 	virtual void Clear() override;
 
-	// ÉèÖÃÔİÍ£
+	// è®¾ç½®æš‚åœ
 	void SetPause(bool is_pause);
 
-	// ´Ó»º³å¶ÓÁĞÈ¡³öpacket
+	// ä»ç¼“å†²é˜Ÿåˆ—å–å‡ºpacket
 	void run() override;
 
 	OwlAudioThread();
-	virtual ~OwlAudioThread();
+	~OwlAudioThread() = default;
 public:
-	long long pts_ = 0;  // µ±Ç°ÒôÆµ²¥·ÅµÄpts
+	long long pts_ = 0;  // å½“å‰éŸ³é¢‘æ’­æ”¾çš„pts
 protected:
-	std::mutex audio_mutex_;
-	OwlAudioPlay* audio_play_ = nullptr;  // ÒôÆµ²¥·Å
-	OwlResample* resample_ = nullptr;  // ÖØ²ÉÑù 
+	std::mutex audio_mutex_;  // éŸ³é¢‘çº¿ç¨‹é”
+	OwlAudioPlay* audio_play_ = nullptr;  // éŸ³é¢‘æ’­æ”¾
+	OwlResample* resample_ = nullptr;  // é‡é‡‡æ ·  
 };
 

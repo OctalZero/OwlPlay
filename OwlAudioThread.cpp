@@ -12,13 +12,13 @@ bool OwlAudioThread::Open(AVCodecParameters* para)
 
 	audio_mutex_.lock();
 	pts_ = 0;
-	bool re = true;  // ²»ÔÚÒì³£Çé¿öÏÂÖ±½Óreturn£¬·ÀÖ¹paraÃ»ÓĞÊÍ·Å
+	bool re = true;  // ä¸åœ¨å¼‚å¸¸æƒ…å†µä¸‹ç›´æ¥returnï¼Œé˜²æ­¢paraæ²¡æœ‰é‡Šæ”¾
 	if (!resample_->Open(para, false)) {
 		cout << "OwlResample open failed!" << endl;
 		re = false;
 	}
 
-	// ´«Öµ»áÈÃ QIODevice ´ò¿ª³öÎÊÌâ
+	// ä¼ å€¼ä¼šè®© QIODevice æ‰“å¼€å‡ºé—®é¢˜
 	//audio_play_->sample_rate_ = resample_->out_sample_rate_;
 	//audio_play_->channels_ = resample_->out_channel_;
 	//audio_play_->sample_size_ = resample_->out_sample_size_;
@@ -28,13 +28,13 @@ bool OwlAudioThread::Open(AVCodecParameters* para)
 		re = false;
 	}
 
-	// decode_µÄOpenÓÃÍêºó»áÊÍ·Åpara£¬·ÅÔÚ×îºóÃæÊÍ·Å
+	// decode_çš„Openç”¨å®Œåä¼šé‡Šæ”¾paraï¼Œæ”¾åœ¨æœ€åé¢é‡Šæ”¾
 	if (!decode_->Open(para)) {
 		cout << "audio OwlDecode open failed!" << endl;
 		re = false;
 	}
 	audio_mutex_.unlock();
-	cout << "OwlAudioThread::Open£º" << re << endl;
+	cout << "OwlAudioThread::Openï¿½ï¿½" << re << endl;
 
 	return re;
 }
@@ -52,7 +52,7 @@ void OwlAudioThread::Close()
 	if (audio_play_) {
 		audio_play_->Close();
 		audio_mutex_.lock();
-		// audio_paly_ ×öÁËµ¥ÀıÄ£Ê½£¬ÊÇÒ»¸ö¾²Ì¬µÄ³ÉÔ±£¬²»ĞèÒªÇåÀí
+		// audio_paly_ åšäº†å•ä¾‹æ¨¡å¼ï¼Œæ˜¯ä¸€ä¸ªé™æ€çš„æˆå‘˜ï¼Œä¸éœ€è¦æ¸…ç†
 		audio_play_ = nullptr;
 		audio_mutex_.unlock();
 	}
@@ -77,20 +77,20 @@ void OwlAudioThread::SetPause(bool is_pause)
 
 void OwlAudioThread::run()
 {
-	// ÖØ²ÉÑùºóÒôÆµÊä³öÊı¾İ£¬·ÖÅä10MB´æ·Å
+	// é‡é‡‡æ ·åéŸ³é¢‘è¾“å‡ºæ•°æ®ï¼Œåˆ†é…10MBå­˜æ”¾
 	unsigned char* pcm = new unsigned char[1024 * 1024 * 100];
 
 	while (!is_exit_) {
 		audio_mutex_.lock();
 
-		// ´¦ÀíÔİÍ£
+		// å¤„ç†æš‚åœ
 		if (is_pause_) {
 			audio_mutex_.unlock();
 			msleep(5);
 			continue;
 		}
 
-		//// Ã»ÓĞÊı¾İ£¬»òÕßdecode_¡¢resample_¡¢audio_play_Ã»ÓĞ³õÊ¼»¯ºÃ
+		// æ²¡æœ‰æ•°æ®ï¼Œæˆ–è€…decode_ã€resample_ã€audio_play_æ²¡æœ‰åˆå§‹åŒ–å¥½
 		//if (packets_.empty() || !decode_ || !resample_ || !audio_play_) {
 		//	audio_mutex_.unlock();
 		//	msleep(1);
@@ -108,34 +108,34 @@ void OwlAudioThread::run()
 		AVPacket* packet = Pop();
 		bool re = decode_->SendPacket(packet);
 		if (!re) {
-			cout << "ÒôÆµ½âÂë×èÈû" << endl;
+			cout << "éŸ³é¢‘è§£ç é˜»å¡" << endl;
 			audio_mutex_.unlock();
 			msleep(1);
 			continue;
 		}
-		// Ò»´ÎSend£¬¶à´ÎReceive
+		// ä¸€æ¬¡Sendï¼Œå¤šæ¬¡Receive
 		while (!is_exit_) {
 			AVFrame* frame = decode_->ReceiveFrame();
-			// Í£Ö¹Ë¢ĞÂ Decode »º³åÇø£¬¸üĞÂ¶ÁÈ¡Á÷µÄ×´Ì¬
+			// åœæ­¢åˆ·æ–° Decode ç¼“å†²åŒºï¼Œæ›´æ–°è¯»å–æµçš„çŠ¶æ€
 			if (decode_->eof_) {
 				is_flush_ = false;
 				read_state_ = 3;
-				decode_->eof_ = false; // ÖØÖÃ eof_ ±êÖ¾·û
+				decode_->eof_ = false; // ï¿½ï¿½ï¿½ï¿½ eof_ ï¿½ï¿½Ö¾ï¿½ï¿½
 			}
 			if (!frame)  break;
 
-			// ¼õÈ¥»º³åÖĞÎ´²¥·ÅµÄÊ±¼ä 
+			// å‡å»ç¼“å†²ä¸­æœªæ’­æ”¾çš„æ—¶é—´ 
 			pts_ = decode_->pts_ - audio_play_->GetNoPlayMs();
 
 			cout << "audio pts = " << pts_ << endl;
-			// ÖØ²ÉÑù
+			// é‡é‡‡æ ·
 			int size = resample_->Resample(frame, pcm);
-			// ¿ªÊ¼²¥·ÅÒôÆµ
+			// å¼€å§‹æ’­æ”¾éŸ³é¢‘
 			while (!is_exit_) {
 				if (size <= 0)  break;
-				// »º³åÎ´²¥Íê£¬¿Õ¼ä²»¹»£¬ÔİÍ£Ê±ÒôÆµ»º³åÇøÒ²Ó¦¸ÃÔİÍ£
+				// ç¼“å†²æœªæ’­å®Œï¼Œç©ºé—´ä¸å¤Ÿï¼Œæš‚åœæ—¶éŸ³é¢‘ç¼“å†²åŒºä¹Ÿåº”è¯¥æš‚åœ
 				if (audio_play_->GetFree() < size || is_pause_) {
-					cout << "ÒôÆµ»º³åÂú" << endl;
+					//cout << "ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½Í£" << endl;
 					msleep(1);
 					//usleep(1000000 / resample_->out_sample_rate_);
 					continue;
@@ -151,11 +151,8 @@ void OwlAudioThread::run()
 
 OwlAudioThread::OwlAudioThread()
 {
-	// È·±£±äÁ¿¶¼´æÔÚ£¬±ÜÃâÔÙ½øĞĞÅĞ¶Ï
+	// ç¡®ä¿å˜é‡éƒ½å­˜åœ¨ï¼Œé¿å…å†è¿›è¡Œåˆ¤æ–­
 	if (!resample_)  resample_ = new OwlResample();
-	if (!audio_play_) audio_play_ = OwlAudioPlay::GetAudioPlay();
+	if (!audio_play_) audio_play_ = &OwlAudioPlay::GetAudioPlay();
 }
 
-OwlAudioThread::~OwlAudioThread()
-{
-}

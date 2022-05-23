@@ -1,7 +1,7 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ½âÂëºÍÏÔÊ¾ÊÓÆµµÄÏß³ÌÀà£¬¼Ì³ĞÓÚ OwlDecodeThread£¬
-  *				 Ö÷Òª´¦ÀíÊÓÆµ²¥·ÅÂß¼­£¬Ïàµ±ÓÚÊÓÆµ¿ØÖÆÆ÷¡£
+  *Description:  è§£ç å’Œæ˜¾ç¤ºè§†é¢‘çš„çº¿ç¨‹ç±»ï¼Œç»§æ‰¿äº OwlDecodeThreadï¼Œ
+  *				 ä¸»è¦å¤„ç†è§†é¢‘æ’­æ”¾é€»è¾‘ï¼Œç›¸å½“äºè§†é¢‘æ§åˆ¶å™¨ã€‚
 **********************************************************************************/
 #pragma once
 #include "IVideoCall.h"
@@ -11,24 +11,23 @@ struct AVCodecParameters;
 class OwlVideoThread : public OwlDecodeThread
 {
 public:
-	// ´ò¿ª£¬²»¹Ü³É¹¦Óë·ñ¶¼ÇåÀí
+	// æ‰“å¼€ï¼Œä¸ç®¡æˆåŠŸä¸å¦éƒ½æ¸…ç†
 	virtual bool Open(AVCodecParameters* para, IVideoCall* video_call, int width, int height);
 
-	// ÉèÖÃÔİÍ£
+	// è®¾ç½®æš‚åœ
 	void SetPause(bool is_pause);
 
-	// ´Ó»º³å¶ÓÁĞÈ¡³öpacket
+	// ä»ç¼“å†²é˜Ÿåˆ—å–å‡ºpacket
 	void run() override;
 
-	// ½âÂëpts£¬Èç¹û½ÓÊÕµ½µÄ½âÂëÊı¾İpts >= seek_pts£¬¾Íreturn true£¬²¢ÇÒÏÔÊ¾»­Ãæ
+	// è§£ç ptsï¼Œå¦‚æœæ¥æ”¶åˆ°çš„è§£ç æ•°æ®pts >= seek_ptsï¼Œå°±return trueï¼Œå¹¶ä¸”æ˜¾ç¤ºç”»é¢
 	virtual bool ReaintPts(AVPacket* pkt, long long seek_pts);
 
-	OwlVideoThread();
-	virtual ~OwlVideoThread();
+	OwlVideoThread() = default;
+	virtual ~OwlVideoThread() = default;
 public:
-	long long syn_pts_ = 0;  // Í¬²½Ê±¼ä£¬ÓÉÍâ²¿´«Èë
+	long long syn_pts_ = 0;  // åŒæ­¥æ—¶é—´ï¼Œç”±å¤–éƒ¨ä¼ å…¥
 protected:
-	std::mutex video_mutex_;
-	IVideoCall* video_call_ = nullptr;  // ÏÔÊ¾ÊÓÆµÍ¼ÏñµÄ½Ó¿Ú
+	std::mutex video_mutex_;  // è§†é¢‘çº¿ç¨‹é”
+	IVideoCall* video_call_ = nullptr;  // æ˜¾ç¤ºè§†é¢‘å›¾åƒçš„æ¥å£
 };
-

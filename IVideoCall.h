@@ -1,7 +1,7 @@
 /*********************************************************************************
   *Date:  2022.04.23
-  *Description:  ÊÓÆµÏÔÊ¾µÄ½Ó¿ÚÀà£¬
-				 ±ÜÃâ OwlVideoWidgetÀà Ö±½Ó¿ª·Å¸ø OwlVideoThreadÀà
+  *Description:  è§†é¢‘æ˜¾ç¤ºçš„æ¥å£ç±»ï¼Œ
+				 é¿å… OwlVideoWidgetç±» ç›´æ¥å¼€æ”¾ç»™ OwlVideoThreadç±»
 **********************************************************************************/
 #pragma once
 struct AVFrame;
@@ -9,9 +9,10 @@ struct AVFrame;
 class IVideoCall
 {
 public:
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	virtual void Init(int width, int height) = 0;
-	// ÖØ»æÍ¼Ïñ£¬²»¹Ü³É¹¦Óë·ñ¶¼ÊÍ·Åframe¿Õ¼ä
+
+	// é‡ç»˜å›¾åƒï¼Œä¸ç®¡æˆåŠŸä¸å¦éƒ½é‡Šæ”¾frameç©ºé—´
 	virtual void Repaint(AVFrame* frame) = 0;
 };
 

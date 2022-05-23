@@ -8,7 +8,7 @@ extern "C" {
 #pragma comment(lib,"avutil.lib")
 #pragma comment(lib,"avcodec.lib")
 
-// ¼ÆËã·ÖÊıµÄÖµ
+// è®¡ç®—åˆ†æ•°çš„å€¼
 static double r2d(AVRational r)
 {
 	return r.den == 0 ? 0 : (double)r.num / (double)r.den;
@@ -17,12 +17,12 @@ static double r2d(AVRational r)
 bool OwlDemux::Open(const char* url)
 {
 	Close();
-	// ²ÎÊıÉèÖÃ
+	// å‚æ•°è®¾ç½®
 	AVDictionary* opts = nullptr;
-	// ÉèÖÃrtspÁ÷ÒÔtcpĞ­Òé´ò¿ª
+	// è®¾ç½®rtspæµä»¥tcpåè®®æ‰“å¼€
 	av_dict_set(&opts, "rtsp_transport", "tcp", 0);
 
-	// ÍøÂçÑÓÊ±Ê±¼ä
+	// ç½‘ç»œå»¶æ—¶æ—¶é—´
 	av_dict_set(&opts, "max_delay", "500", 0);
 
 
@@ -30,8 +30,8 @@ bool OwlDemux::Open(const char* url)
 	int re = avformat_open_input(
 		&ic,
 		url,
-		NULL,  // ×Ô¶¯Ñ¡Ôñ½â·â×°Æ÷
-		&opts  // ²ÎÊıÉèÖÃ£¬±ÈÈçrtspµÄÑÓÊ±Ê±¼ä
+		NULL,  // è‡ªåŠ¨é€‰æ‹©è§£å°è£…å™¨
+		&opts  // å‚æ•°è®¾ç½®ï¼Œæ¯”å¦‚rtspçš„å»¶æ—¶æ—¶é—´
 	);
 	if (re != 0)
 	{
@@ -43,7 +43,7 @@ bool OwlDemux::Open(const char* url)
 		return false;
 	}
 
-	// »ñÈ¡Á÷ĞÅÏ¢
+	// è·å–æµä¿¡æ¯
 	re = avformat_find_stream_info(ic, NULL);
 	if (re != 0)
 	{
@@ -56,41 +56,41 @@ bool OwlDemux::Open(const char* url)
 	}
 	cout << "open " << url << " success! " << endl;
 
-	//×ÜÊ±³¤ ºÁÃë
+	//æ€»æ—¶é•¿ æ¯«ç§’
 	total_ms_ = ic->duration / (AV_TIME_BASE / 1000);
 	cout << "total_ms_ = " << total_ms_ << endl;
 
-	//´òÓ¡ÊÓÆµÁ÷ÏêÏ¸ĞÅÏ¢
+	//æ‰“å°è§†é¢‘æµè¯¦ç»†ä¿¡æ¯
 	av_dump_format(ic, 0, url, 0);
 
-	// »ñÈ¡ÊÓÆµÁ÷£¬»¹ÓĞÒ»ÖÖÍ¨¹ı±éÀúËùÓĞÁ÷µÄ·½·¨»ñÈ¡
+	// è·å–è§†é¢‘æµï¼Œè¿˜æœ‰ä¸€ç§é€šè¿‡éå†æ‰€æœ‰æµçš„æ–¹æ³•è·å–
 	video_stream_ = av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
 	AVStream* as = ic->streams[video_stream_];
-	// ´æ´¢¿í¸ß
+	// å­˜å‚¨å®½é«˜
 	width_ = as->codecpar->width;
 	height_ = as->codecpar->height;
 
 	cout << "=================================================" << endl;
-	cout << video_stream_ << "ÊÓÆµĞÅÏ¢" << endl;
+	cout << video_stream_ << "è§†é¢‘ä¿¡æ¯" << endl;
 	cout << "codec_id = " << as->codecpar->codec_id << endl;
 	cout << "format = " << as->codecpar->format << endl;
 	cout << "width=" << as->codecpar->width << endl;
 	cout << "height=" << as->codecpar->height << endl;
-	// Ö¡ÂÊ fps ·ÖÊı×ª»»
+	// å¸§ç‡ fps åˆ†æ•°è½¬æ¢
 	cout << "video fps = " << r2d(as->avg_frame_rate) << endl;
 
-	// »ñÈ¡ÒôÆµÁ÷
+	// è·å–éŸ³é¢‘æµ
 	audio_stream_ = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
 	as = ic->streams[audio_stream_];
 	sample_rate_ = as->codecpar->sample_rate;
 	channels_ = as->codecpar->channels;
 	cout << "=================================================" << endl;
-	cout << audio_stream_ << "ÒôÆµĞÅÏ¢" << endl;
+	cout << audio_stream_ << "éŸ³é¢‘ä¿¡æ¯" << endl;
 	cout << "codec_id = " << as->codecpar->codec_id << endl;
 	cout << "format = " << as->codecpar->format << endl;
 	cout << "sample_rate = " << as->codecpar->sample_rate << endl;
 	cout << "channels = " << as->codecpar->channels << endl;
-	//  Ò»Ö¡Êı¾İ µ¥Í¨µÀÑù±¾Êı 
+	//  ä¸€å¸§æ•°æ® å•é€šé“æ ·æœ¬æ•° 
 	cout << "frame_size = " << as->codecpar->frame_size << endl;
 	mutex_.unlock();
 
@@ -100,19 +100,19 @@ bool OwlDemux::Open(const char* url)
 AVPacket* OwlDemux::Read()
 {
 	mutex_.lock();
-	if (!ic) {  // Èİ´í
+	if (!ic) {  // å®¹é”™
 		mutex_.unlock();
 		return nullptr;
 	}
-	AVPacket* pkt = av_packet_alloc();  // ·ÖÅä¶ÔÏó¿Õ¼ä
-	// ¶ÁÈ¡Ò»Ö¡£¬²¢·ÖÅäÊı¾İ¿Õ¼ä
+	AVPacket* pkt = av_packet_alloc();  // åˆ†é…å¯¹è±¡ç©ºé—´
+	// è¯»å–ä¸€å¸§ï¼Œå¹¶åˆ†é…æ•°æ®ç©ºé—´
 	int re = av_read_frame(ic, pkt);
-	if (re != 0) {  // ·µ»Ø0Îª³É¹¦
+	if (re != 0) {  // è¿”å›0ä¸ºæˆåŠŸ
 		mutex_.unlock();
-		av_packet_free(&pkt);  // ÊÍ·Å¶ÔÏó
+		av_packet_free(&pkt);  // é‡Šæ”¾å¯¹è±¡
 		return nullptr;
 	}
-	// pts¡¢dts×ª»»ÎªºÁÃë, ·½±ã×öÍ¬²½
+	// ptsã€dtsè½¬æ¢ä¸ºæ¯«ç§’, æ–¹ä¾¿åšåŒæ­¥
 	pkt->pts = pkt->pts * (r2d(ic->streams[pkt->stream_index]->time_base) * 1000);
 	pkt->dts = pkt->dts * (r2d(ic->streams[pkt->stream_index]->time_base) * 1000);
 	mutex_.unlock();
@@ -124,14 +124,14 @@ AVPacket* OwlDemux::Read()
 AVPacket* OwlDemux::ReadVideo()
 {
 	mutex_.lock();
-	if (!ic) {  // Èİ´í
+	if (!ic) {  // å®¹é”™
 		mutex_.unlock();
 		return nullptr;
 	}
 	mutex_.unlock();
 
 	AVPacket* pkt = nullptr;
-	// ÏŞ¶¨20Ö¡£¬·ÀÖ¹×èÈû
+	// é™å®š20å¸§ï¼Œé˜²æ­¢é˜»å¡
 	for (int i = 0; i < 20; ++i) {
 		pkt = Read();
 		if (!pkt)  break;
@@ -199,16 +199,16 @@ bool OwlDemux::Seek(double pos)
 		mutex_.unlock();
 		return false;
 	}
-	// ÇåÀí¶ÁÈ¡»º³å£¬·ÀÖ¹Õ³°üÏÖÏó
+	// æ¸…ç†è¯»å–ç¼“å†²ï¼Œé˜²æ­¢ç²˜åŒ…ç°è±¡
 	avformat_flush(ic);
 
 	long long seek_pos = 0;
-	// ÆäÖĞÒ»ÖÖÌø×ª·½·¨£¬×öÈİ´íµÄ»°»¹¿ÉÒÔ¿¼ÂÇÁíÍâÁ½ÖÖ·½·¨£¬·ÀÖ¹duration¶Á²»µ½
-	// Ìø×ªÒôÆµ
+	// å…¶ä¸­ä¸€ç§è·³è½¬æ–¹æ³•ï¼Œåšå®¹é”™çš„è¯è¿˜å¯ä»¥è€ƒè™‘å¦å¤–ä¸¤ç§æ–¹æ³•ï¼Œé˜²æ­¢durationè¯»ä¸åˆ°
+	// è·³è½¬éŸ³é¢‘
 	seek_pos = ic->streams[audio_stream_]->duration * pos;
 	int re = av_seek_frame(ic, audio_stream_, seek_pos, AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_FRAME);
 	mutex_.unlock();
-	if (re < 0) {  //·µ»Ø>=0Îª³É¹¦
+	if (re < 0) {  //è¿”å›>=0ä¸ºæˆåŠŸ
 		return false;
 	}
 
@@ -222,7 +222,7 @@ void OwlDemux::Clear()
 		mutex_.unlock();
 		return;
 	}
-	// ÇåÀí¶ÁÈ¡»º³å£¬·ÀÖ¹Õ³°üÏÖÏó
+	// æ¸…ç†è¯»å–ç¼“å†²ï¼Œé˜²æ­¢ç²˜åŒ…ç°è±¡
 	avformat_flush(ic);
 	mutex_.unlock();
 }
@@ -235,7 +235,7 @@ void OwlDemux::Close()
 		return;
 	}
 	avformat_close_input(&ic);
-	// ÖØÖÃÃ½Ìå×ÜÊ±³¤£¨ºÁÃë£©
+	// é‡ç½®åª’ä½“æ€»æ—¶é•¿ï¼ˆæ¯«ç§’ï¼‰
 	total_ms_ = 0;
 	mutex_.unlock();
 }
@@ -246,16 +246,12 @@ OwlDemux::OwlDemux()
 	static std::mutex demux_mutex;
 	demux_mutex.lock();
 	if (is_first) {
-		// ³õÊ¼»¯·â×°¿â
+		// åˆå§‹åŒ–å°è£…åº“
 		//av_register_all();
 
-		// ³õÊ¼»¯ÍøÂç¿â £¨¿ÉÒÔ´ò¿ªrtsp rtmp http Ğ­ÒéµÄÁ÷Ã½ÌåÊÓÆµ£©
+		// åˆå§‹åŒ–ç½‘ç»œåº“ ï¼ˆå¯ä»¥æ‰“å¼€rtsp rtmp http åè®®çš„æµåª’ä½“è§†é¢‘ï¼‰
 		avformat_network_init();
 		is_first = false;
 	}
 	demux_mutex.unlock();
-}
-
-OwlDemux::~OwlDemux()
-{
 }

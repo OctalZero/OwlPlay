@@ -2,11 +2,11 @@
 #include <QAudioFormat>
 #include <QAudioOutput>
 #include <mutex>
-// µ¥ÀıÄ£Ê½
+// å·¥å‚ï¼Œè·å–å…·ä½“çš„éŸ³é¢‘æ’­æ”¾å™¨ï¼Œå¯æ¢æˆä¸åŒçš„æ¥å£
 class QtAudioPlay : public OwlAudioPlay
 {
 public:
-	// ´ò¿ªÒôÆµ
+	// ï¿½ï¿½ï¿½ï¿½Æµ
 	virtual bool Open() override {
 		Close();
 		QAudioFormat fmt;
@@ -18,7 +18,7 @@ public:
 		fmt.setSampleType(QAudioFormat::UnSignedInt);
 		mutex_.lock();
 		output_ = new QAudioOutput(fmt);
-		io_ = output_->start(); // ¿ªÊ¼²¥·Å
+		io_ = output_->start();  // å¼€å§‹æ’­æ”¾
 		mutex_.unlock();
 
 		if (io_) {
@@ -27,11 +27,11 @@ public:
 		return false;
 	}
 
-	// ¹Ø±ÕÒôÆµ
+	// å…³é—­éŸ³é¢‘
 	virtual void Close() override {
 		mutex_.lock();
 		if (io_) {
-			io_->close();  // ¿Õ¼äÓÉoutput_²úÉú£¬Ó¦ÓÉoutput_ÊÍ·Å
+			io_->close();  // ç©ºé—´ç”±output_äº§ç”Ÿï¼Œåº”ç”±output_é‡Šæ”¾
 			io_ = nullptr;
 		}
 		if (output_) {
@@ -42,7 +42,7 @@ public:
 		mutex_.unlock();
 	}
 
-	// ÇåÀíÒôÆµ»º´æ
+	// æ¸…ç†éŸ³é¢‘ç¼“å­˜
 	virtual void Clear() override {
 		mutex_.lock();
 		if (io_) {
@@ -51,7 +51,7 @@ public:
 		mutex_.unlock();
 	}
 
-	// ·µ»Ø»º³åÖĞ»¹Ã»ÓĞ²¥·ÅµÄÊ±¼ä£¨ºÁÃëms£©
+	// è¿”å›ç¼“å†²ä¸­è¿˜æ²¡æœ‰æ’­æ”¾çš„æ—¶é—´ï¼ˆæ¯«ç§’msï¼‰
 	virtual long long GetNoPlayMs() override {
 		mutex_.lock();
 		if (!output_) {
@@ -60,15 +60,15 @@ public:
 		}
 
 		long long pts = 0;
-		// »¹Î´²¥·ÅµÄ×Ö½ÚÊı
+		// è¿˜æœªæ’­æ”¾çš„å­—èŠ‚æ•°
 		double size = output_->bufferSize() - output_->bytesFree();
-		// Ò»ÃëÒôÆµ×Ö½Ú´óĞ¡
+		// ä¸€ç§’éŸ³é¢‘å­—èŠ‚å¤§å°
 		double sec_size = sample_rate_ * (static_cast<double>(sample_size_) / 8) * channels_;
 		if (sec_size <= 0) {
 			pts = 0;
 		}
 		else {
-			pts = (size / sec_size) * 1000;  // ¼ÆËã»º³åÖĞ»¹Ã»ÓĞ²¥·ÅµÄÊ±¼ä
+			pts = (size / sec_size) * 1000;  // è®¡ç®—ç¼“å†²ä¸­è¿˜æ²¡æœ‰æ’­æ”¾çš„æ—¶é—´
 		}
 		mutex_.unlock();
 
@@ -76,7 +76,7 @@ public:
 	}
 
 
-	// ²¥·ÅÒôÆµ
+	// æ’­æ”¾éŸ³é¢‘
 	virtual bool Write(const unsigned char* data, int datasize) override {
 		if (!data || datasize <= 0)  return false;
 		mutex_.lock();
@@ -84,7 +84,7 @@ public:
 			mutex_.unlock();
 			return false;
 		}
-		// ·µ»ØÊµ¼ÊĞ´ÈëµÄ´óĞ¡
+		// è¿”å›å®é™…å†™å…¥çš„å¤§å°
 		int size = io_->write((char*)data, datasize);
 		mutex_.unlock();
 		if (size != datasize) {
@@ -94,7 +94,7 @@ public:
 		return true;
 	}
 
-	// ÅĞ¶ÏÒôÆµ»º³åÇøÊÇ·ñÓĞ×ã¹»¿Õ¼äÀ´Ğ´
+	// åˆ¤æ–­éŸ³é¢‘ç¼“å†²åŒºæ˜¯å¦æœ‰è¶³å¤Ÿç©ºé—´æ¥å†™
 	virtual int GetFree() override {
 		mutex_.lock();
 		if (!output_) {
@@ -114,7 +114,7 @@ public:
 			return;
 		}
 		if (is_pause) {
-			output_->suspend();  // ¹ÒÆğÒôÆµÊä³ö»º³å 
+			output_->suspend();  // æŒ‚èµ·éŸ³é¢‘è¾“å‡ºç¼“å†²  
 		}
 		else {
 			output_->resume();
@@ -123,22 +123,15 @@ public:
 	}
 
 public:
-	QAudioOutput* output_ = nullptr;  // ÒôÆµÊä³öÊı¾İ
-	QIODevice* io_ = nullptr;  // ÒôÆµÊä³öÉè±¸
+	QAudioOutput* output_ = nullptr;  // éŸ³é¢‘è¾“å‡ºæ•°æ®
+	QIODevice* io_ = nullptr;  // éŸ³é¢‘è¾“å‡ºè®¾å¤‡
 	std::mutex mutex_;
 };
 
-OwlAudioPlay* OwlAudioPlay::GetAudioPlay()
+OwlAudioPlay& OwlAudioPlay::GetAudioPlay()
 {
-	static QtAudioPlay play;  // ¾²Ì¬±äÁ¿£¬¶à´Î·ÃÎÊÖ»»á´´½¨Ò»´Î
+	static QtAudioPlay play;  // é™æ€å˜é‡ï¼Œå¤šæ¬¡è®¿é—®åªä¼šåˆ›å»ºä¸€æ¬¡
 
-	return &play;
+	return play;
 }
 
-OwlAudioPlay::OwlAudioPlay()
-{
-}
-
-OwlAudioPlay::~OwlAudioPlay()
-{
-}

@@ -8,7 +8,7 @@ void OwlDecodeThread::Push(AVPacket* pkt)
 {
 	if (read_state_ != 2 && !pkt)  return;
 
-	// ×èÈû£¬Êı¾İ²»ÄÜ¶ª
+	// é˜»å¡ï¼Œæ•°æ®ä¸èƒ½ä¸¢
 	while (!is_exit_) {
 		mutex_.lock();
 		if (packets_.size() < max_list_) {
@@ -16,7 +16,7 @@ void OwlDecodeThread::Push(AVPacket* pkt)
 			mutex_.unlock();
 			break;
 		}
-		cout << "Push×èÈû" << endl;
+		cout << "Pushé˜»å¡" << endl;
 		mutex_.unlock();
 		msleep(1);
 	}
@@ -26,7 +26,7 @@ void OwlDecodeThread::Clear()
 {
 	mutex_.lock();
 	decode_->Clear();
-	// ÇåÀí»º³å¶ÓÁĞ
+	// æ¸…ç†ç¼“å†²é˜Ÿåˆ—
 	while (!packets_.empty()) {
 		AVPacket* packet = packets_.front();
 		OwlFreePacket(&packet);
@@ -38,10 +38,10 @@ void OwlDecodeThread::Clear()
 void OwlDecodeThread::Close()
 {
 	Clear();
-	// µÈ´ıÏß³ÌÍË³ö
+	// ç­‰å¾…çº¿ç¨‹é€€å‡º
 	is_exit_ = true;
 	wait();
-	// Ïß³ÌÍË³öºóÔÙÇåÀídecode_£¬ÔÚÏß³ÌÖĞ¿ÉÄÜ·ÃÎÊµ½decode_
+	// çº¿ç¨‹é€€å‡ºåå†æ¸…ç†decode_ï¼Œåœ¨çº¿ç¨‹ä¸­å¯èƒ½è®¿é—®åˆ°decode_
 	decode_->Close();
 	mutex_.lock();
 	delete decode_;
@@ -79,13 +79,13 @@ void OwlDecodeThread::FlushDecodeBuffer()
 
 OwlDecodeThread::OwlDecodeThread()
 {
-	// ´ò¿ª½âÂëÆ÷
+	// æ‰“å¼€è§£ç å™¨
 	if (!decode_)  decode_ = new OwlDecode();
 }
 
 OwlDecodeThread::~OwlDecodeThread()
 {
-	// µÈ´ıÏß³ÌÍË³ö£¬²»È»Ïß³Ì»¹ÔÚÔËĞĞ£¬µ«ÆäËû¿Õ¼äÒÑ¾­ÊÍ·ÅÁË
+	// ç­‰å¾…çº¿ç¨‹é€€å‡ºï¼Œä¸ç„¶çº¿ç¨‹è¿˜åœ¨è¿è¡Œï¼Œä½†å…¶ä»–ç©ºé—´å·²ç»é‡Šæ”¾äº†
 	is_exit_ = true;
 	wait();
 }
